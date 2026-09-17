@@ -6,17 +6,15 @@ import pytz
 
 st.set_page_config(page_title="KB VINULA TRADING", layout="wide", page_icon="👑")
 
-# ESTILO
 st.markdown("""
 <style>
 .stApp { background: #0A0A0A; color: #EAEAEA; }
 .card { background: #151515; border: 1px solid #2A2A2A; border-radius: 14px; padding: 14px; }
 .gold { color: #FFD60A; }
-.gold-bar { background: linear-gradient(90deg,#FFD60A,#FFB700); color: #111; font-weight: 900; text-align: center; padding: 8px; border-radius: 8px; }
 </style>
 """, unsafe_allow_html=True)
 
-# ================= HEADER =================
+# HEADER
 h1,h2,h3 = st.columns([1.2, 2.5, 1.5])
 with h1:
     try: st.image("logo.png", width=140)
@@ -32,69 +30,58 @@ with h2:
         components.html("""<div class="tradingview-widget-container"><div class="tradingview-widget-container__widget"></div><script src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{"symbol":"OANDA:XAUUSD","width":"100%","height":80,"locale":"es","colorTheme":"dark","isTransparent":true}</script></div>""", height=85)
         st.markdown("</div>", unsafe_allow_html=True)
 with h3:
-    st.markdown("<div class='card'><b class='gold'>REGLA DE ORO</b><br>Sin 7/7 no hay trade<br><br>El oro premia al paciente</div>", unsafe_allow_html=True)
+    st.markdown("<div class='card'><b class='gold'>REGLA DE ORO</b><br>Sin 7/7 no hay trade</div>", unsafe_allow_html=True)
 
 st.divider()
 
-# ================= CALENDARIO + PILARES =================
+# CALENDARIO + PILARES
 f1,f2 = st.columns([1.2,1])
 with f1:
     st.markdown("*📅 CALENDARIO ECONOMICO*")
     with st.container(border=True):
         components.html("""<div style="height:320px"><script src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>{"colorTheme":"dark","isTransparent":true,"width":"100%","height":"320","importanceFilter":"-1,0,1","currencyFilter":"USD"}</script></div>""", height=330)
-
 with f2:
-    st.markdown("*🏛️ PILARES FUNDAMENTAL ORO*")
+    st.markdown("*🏛️ PILARES FUNDAMENTAL*")
     with st.container(border=True):
-        st.markdown("*IPC (Inflación)* - Alto = Malo para oro")
-        st.progress(70)
-        st.markdown("*NFP (Empleo)* - Fuerte = DXY sube")
-        st.progress(45)
+        st.progress(70, text="IPC")
+        st.progress(45, text="NFP")
         a,b = st.columns(2)
-        a.metric("DXY", "103.2", "-0.3%")
-        b.metric("VIX", "18.5", "Miedo medio")
-        st.markdown("*🌍 Geopolítica*")
-        geo = st.selectbox("", ["Tensión media - Oro soporte","Guerra - Oro sube fuerte","Calma - Oro lateral"], label_visibility="collapsed")
+        a.metric("DXY","103.2","-0.3%")
+        b.metric("VIX","18.5")
 
-# ================= GRAFICOS =================
+# GRAFICOS
 st.divider()
 g1,g2 = st.columns(2)
 with g1:
-    st.markdown("*📈 GRAFICO XAUUSD*")
-    components.html("""<div id="kb_xau_final" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"OANDA:XAUUSD","interval":"60","timezone":"Europe/Madrid","theme":"dark","container_id":"kb_xau_final"})</script>""", height=520)
+    st.markdown("*📈 XAUUSD*")
+    components.html("""<div id="kb_xau_fix" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"OANDA:XAUUSD","interval":"60","theme":"dark","container_id":"kb_xau_fix"})</script>""", height=520)
 with g2:
-    st.markdown("*📉 GRAFICO DXY*")
-    components.html("""<div id="kb_dxy_final" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"TVC:DXY","interval":"60","timezone":"Europe/Madrid","theme":"dark","container_id":"kb_dxy_final"})</script>""", height=520)
+    st.markdown("*📉 DXY*")
+    components.html("""<div id="kb_dxy_fix" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"TVC:DXY","interval":"60","theme":"dark","container_id":"kb_dxy_fix"})</script>""", height=520)
 
-# ================= CHECKLIST FRANCOTIRADOR =================
+# CHECKLIST
 st.divider()
-st.markdown("### 🎯 CHECKLIST FRANCOTIRADOR - 7 PASOS")
+st.markdown("### 🎯 CHECKLIST FRANCOTIRADOR")
 with st.container(border=True):
-    c1,c2 = st.columns(2)
-    with c1:
-        t1 = st.checkbox("1. Tendencia Diaria")
-        t2 = st.checkbox("2. Zona de interes D1, S1, M1")
-        t3 = st.checkbox("3. Rechazo de vela H4 de (D1,S1,M1)")
-        t4 = st.checkbox("4. BoS H1")
-    with c2:
-        t5 = st.checkbox("5. Retraso a FVG 15m")
-        t6 = st.checkbox("6. BoS 5m")
-        t7 = st.checkbox("7. Entrada")
-
+    t1 = st.checkbox("1. Tendencia Diaria")
+    t2 = st.checkbox("2. Zona D1,S1,M1")
+    t3 = st.checkbox("3. Rechazo H4")
+    t4 = st.checkbox("4. BoS H1")
+    t5 = st.checkbox("5. FVG 15m")
+    t6 = st.checkbox("6. BoS 5m")
+    t7 = st.checkbox("7. Entrada")
     total = sum([t1,t2,t3,t4,t5,t6,t7])
     st.progress(total/7, text=f"{total}/7")
     if total==7:
+        st.success("7/7 - EJECUTA")
         st.balloons()
-        st.success("🔥 7/7 - MODO FRANCOTIRADOR - EJECUTA")
-    elif total>=4:
-        st.warning(f"{total}/7 - Casi listo")
     else:
         st.error(f"{total}/7 - ESPERA")
 
-# ================= DIARIO DE TRADING ESCRIBIBLE - ARREGLA TU FOTO =================
+# DIARIO - FIX DE TU FOTO
 st.divider()
 st.markdown("### 📂 DIARIO DE TRADING")
-st.info("👇 Toca cualquier casilla y escribe con tu teclado. Dale al + de abajo para nueva fila. Este fix borra los Unnamed de tu foto.")
+st.info("👇 Toca cualquier casilla y escribe. + abajo para nueva fila.")
 
 FILE = "trading.xlsx"
 
@@ -111,6 +98,42 @@ def cargar_excel_limpio():
         df = df.loc[:, ~df.columns.astype(str).str.contains('Unnamed', na=False)]
         df = df.dropna(how='all')
         df = df.fillna("")
+        # ARREGLO DE FECHA SIN TRY ANIDADO
         if "Fecha" in df.columns:
-            try:
-                df["Fecha"] = pd.to_datetime
+            df["Fecha"] = pd.to_datetime(df["Fecha"], errors='coerce')
+            df["Fecha"] = df["Fecha"].dt.strftime("%d/%m/%Y")
+            df["Fecha"] = df["Fecha"].replace("NaT", "")
+        return df
+    except:
+        return pd.DataFrame({
+            "Fecha": [datetime.now().strftime("%d/%m/%Y")],
+            "Activo": ["MGC"],
+            "Calendario Economico": [""],
+            "Killzone 08h": [""],
+            "killzone 13h": [""],
+            "tamaño": [0.25],
+            "Resultado": [""],
+            "Comentario": [""]
+        })
+
+if "df_kb_final" not in st.session_state:
+    st.session_state.df_kb_final = cargar_excel_limpio()
+
+editado = st.data_editor(
+    st.session_state.df_kb_final,
+    num_rows="dynamic",
+    use_container_width=True,
+    height=500,
+    key="editor_final_completo"
+)
+
+st.session_state.df_kb_final = editado
+
+b1,b2 = st.columns(2)
+with b1:
+    if st.button("💾 GUARDAR TODO", type="primary", use_container_width=True):
+        editado.to_excel(FILE, index=False)
+        st.success("Guardado!")
+        st.balloons()
+with b2:
+    st.download_button("⬇️ DESCARGAR", editado.to_csv(index=False).encode('utf-8'), "diario_KB.csv", "text/csv", use_container_width=True)
