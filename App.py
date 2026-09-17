@@ -49,15 +49,27 @@ st.markdown("<div class='gold-bar'>REGLA DE ORO: SIN 5/5 NO HAY TRADE</div>", un
 
 colA, colB = st.columns([2,1])
 with colA:
-    st.markdown("<div class='block-title'>BLOQUE A - CALENDARIO US 3 ESTRELLAS</div>", unsafe_allow_html=True)
+    st.markdown("<div class='block-title'>BLOQUE A - SOLO NOTICIAS ROJAS US 3 ESTRELLAS</div>", unsafe_allow_html=True)
     noticias = st.selectbox("Noticias rojas hoy?", ["No - Verde, se puede operar", "Si - Rojo, NO TRADE"], key="noticias")
     
-    # CALENDARIO INVESTING.COM ESTILO - SOLO US 3 ESTRELLAS
     components.html("""
-    <iframe src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=5&calType=week&timeZone=58&lang=4" 
-    width="100%" height="500" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0"></iframe>
-    <div style="font-size:10px; color:grey;">Calendario: Solo EEUU (US) - Fuente Investing.com</div>
-    """, height=530)
+    <!-- TradingView Widget SOLO 3 ESTRELLAS US -->
+    <div class="tradingview-widget-container">
+      <div class="tradingview-widget-container__widget"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+      {
+      "colorTheme": "light",
+      "isTransparent": false,
+      "width": "100%",
+      "height": "550",
+      "locale": "es",
+      "importanceFilter": "1",
+      "countryFilter": "us",
+      "currencyFilter": "USD"
+      }
+      </script>
+    </div>
+    """, height=580)
 
 with colB:
     st.markdown("<div class='block-title'>BLOQUE B - CHECKLIST 5/5</div>", unsafe_allow_html=True)
@@ -68,7 +80,7 @@ with colB:
     s5 = st.checkbox("5. Confirmacion 5m")
     score = s1+s2+s3+s4+s5
     if score==5 and "No" in noticias:
-        st.success(f"SETUP PERFECTO {score}/5 - BUSCA ENTRADA")
+        st.success(f"SETUP PERFECTO {score}/5")
         st.balloons()
     elif "Si" in noticias:
         st.error("HOY NO SE OPERA - NOTICIA ROJA")
@@ -76,21 +88,6 @@ with colB:
         st.warning(f"Esperando {score}/5")
 
 st.divider()
-
 st.markdown("<div class='block-title'>GRAFICO XAUUSD 800PX</div>", unsafe_allow_html=True)
 components.html("""
-<div id="tv_xau" style="height:800px;width:100%"></div>
-<script src="https://s3.tradingview.com/tv.js"></script>
-<script>
-new TradingView.widget({"autosize": true,"symbol": "OANDA:XAUUSD","interval": "60","timezone": "Europe/Madrid","theme": "light","style": "1","locale": "es","container_id": "tv_xau"});
-</script>
-""", height=820)
-
-st.markdown("<div class='block-title'>DXY 600PX</div>", unsafe_allow_html=True)
-components.html("""
-<div id="tv_dxy" style="height:600px;width:100%"></div>
-<script src="https://s3.tradingview.com/tv.js"></script>
-<script>
-new TradingView.widget({"autosize": true,"symbol": "TVC:DXY","interval": "60","timezone": "Europe/Madrid","theme": "light","style": "1","locale": "es","container_id": "tv_dxy"});
-</script>
-""", height=620)
+<div id="tv_xau" style="height:800
