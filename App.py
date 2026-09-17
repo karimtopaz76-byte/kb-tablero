@@ -29,7 +29,7 @@ with c3:
         st.markdown("*⚡ ACCESO RÁPIDO*")
         b1, b2 = st.columns(2)
         b1.link_button("▶️ YouTube", "https://www.youtube.com", use_container_width=True)
-        b2.link_button("📊 Excel", "https://github.com/tebyte/kb-tablero/blob/main/seguiiento%20trading.xlsx", use_container_width=True)
+        b2.link_button("📊 Excel", "https://github.com/tebyte/kb-tablero/blob/main/trading.xlsx", use_container_width=True)
 
         st.divider()
         st.markdown("*📂 SEGUIMIENTO*")
