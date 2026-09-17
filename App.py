@@ -15,18 +15,14 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# HEADER
 c1, c2 = st.columns([1,4])
 with c1:
-    try:
-        st.image("logo.png", width=180)
-    except:
-        st.write("KB")
+    try: st.image("logo.png", width=180)
+    except: st.write("KB")
 with c2:
     st.markdown("<h1 style='margin-top:35px; font-weight:900;'>KB VINUELA<br>TRADING</h1>", unsafe_allow_html=True)
 
-# FRASES
-st.markdown("<div class='block-title'>MENTALIDAD KB - 6 REGLAS DE AYER</div>", unsafe_allow_html=True)
+st.markdown("<div class='block-title'>MENTALIDAD KB - 6 REGLAS</div>", unsafe_allow_html=True)
 a, b = st.columns(2)
 with a:
     st.markdown("<div class='phrase-card'><b>1. Paciencia:</b> Aprender a cultivar la paciencia.</div>", unsafe_allow_html=True)
@@ -43,21 +39,26 @@ p1.markdown("<div class='pillar-box'>FUNDAMENTAL<br>El POR QUE</div>", unsafe_al
 p2.markdown("<div class='pillar-box'>TECNICO<br>El COMO</div>", unsafe_allow_html=True)
 p3.markdown("<div class='pillar-box'>PSICOLOGIA<br>El QUIEN</div>", unsafe_allow_html=True)
 
-# RELOJES
 tz_sevilla = pytz.timezone('Europe/Madrid')
 tz_ny = pytz.timezone('America/New_York')
-hora_sev = datetime.now(tz_sevilla).strftime("%H:%M:%S")
-hora_ny = datetime.now(tz_ny).strftime("%H:%M:%S")
 r1, r2 = st.columns(2)
-r1.info(f"SEVILLA: {hora_sev}")
-r2.info(f"NY: {hora_ny}")
+r1.info(f"SEVILLA: {datetime.now(tz_sevilla).strftime('%H:%M:%S')}")
+r2.info(f"NY: {datetime.now(tz_ny).strftime('%H:%M:%S')}")
 
 st.markdown("<div class='gold-bar'>REGLA DE ORO: SIN 5/5 NO HAY TRADE</div>", unsafe_allow_html=True)
 
-colA, colB = st.columns(2)
+colA, colB = st.columns([2,1])
 with colA:
-    st.markdown("<div class='block-title'>BLOQUE A - CONTEXTO</div>", unsafe_allow_html=True)
-    noticias = st.selectbox("Noticias rojas?", ["No - Verde", "Si - Rojo NO TRADE"])
+    st.markdown("<div class='block-title'>BLOQUE A - CALENDARIO US 3 ESTRELLAS</div>", unsafe_allow_html=True)
+    noticias = st.selectbox("Noticias rojas hoy?", ["No - Verde, se puede operar", "Si - Rojo, NO TRADE"], key="noticias")
+    
+    # CALENDARIO INVESTING.COM ESTILO - SOLO US 3 ESTRELLAS
+    components.html("""
+    <iframe src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=5&calType=week&timeZone=58&lang=4" 
+    width="100%" height="500" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0"></iframe>
+    <div style="font-size:10px; color:grey;">Calendario: Solo EEUU (US) - Fuente Investing.com</div>
+    """, height=530)
+
 with colB:
     st.markdown("<div class='block-title'>BLOQUE B - CHECKLIST 5/5</div>", unsafe_allow_html=True)
     s1 = st.checkbox("1. Zona D1/S1/M1")
@@ -67,29 +68,21 @@ with colB:
     s5 = st.checkbox("5. Confirmacion 5m")
     score = s1+s2+s3+s4+s5
     if score==5 and "No" in noticias:
-        st.success(f"SETUP PERFECTO {score}/5")
+        st.success(f"SETUP PERFECTO {score}/5 - BUSCA ENTRADA")
         st.balloons()
+    elif "Si" in noticias:
+        st.error("HOY NO SE OPERA - NOTICIA ROJA")
     else:
         st.warning(f"Esperando {score}/5")
 
 st.divider()
 
-# GRAFICOS
 st.markdown("<div class='block-title'>GRAFICO XAUUSD 800PX</div>", unsafe_allow_html=True)
 components.html("""
 <div id="tv_xau" style="height:800px;width:100%"></div>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-new TradingView.widget({
-"autosize": true,
-"symbol": "OANDA:XAUUSD",
-"interval": "60",
-"timezone": "Europe/Madrid",
-"theme": "light",
-"style": "1",
-"locale": "es",
-"container_id": "tv_xau"
-});
+new TradingView.widget({"autosize": true,"symbol": "OANDA:XAUUSD","interval": "60","timezone": "Europe/Madrid","theme": "light","style": "1","locale": "es","container_id": "tv_xau"});
 </script>
 """, height=820)
 
@@ -98,15 +91,6 @@ components.html("""
 <div id="tv_dxy" style="height:600px;width:100%"></div>
 <script src="https://s3.tradingview.com/tv.js"></script>
 <script>
-new TradingView.widget({
-"autosize": true,
-"symbol": "TVC:DXY",
-"interval": "60",
-"timezone": "Europe/Madrid",
-"theme": "light",
-"style": "1",
-"locale": "es",
-"container_id": "tv_dxy"
-});
+new TradingView.widget({"autosize": true,"symbol": "TVC:DXY","interval": "60","timezone": "Europe/Madrid","theme": "light","style": "1","locale": "es","container_id": "tv_dxy"});
 </script>
 """, height=620)
