@@ -102,7 +102,11 @@ def cargar_excel_limpio():
         if "Fecha" in df.columns:
             df["Fecha"] = pd.to_datetime(df["Fecha"], errors='coerce')
             df["Fecha"] = df["Fecha"].dt.strftime("%d/%m/%Y")
-            df["Fecha"] = df["Fecha"].replace("NaT", "")
+            df["Fecha"] = df["Fecha"].fillna("").replace("NaT", "")
+        df = df.replace([0, 0.0, "0.0"], "")
+        
+            
+    
         return df
     except:
         return pd.DataFrame({
