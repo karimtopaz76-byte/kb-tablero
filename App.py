@@ -18,7 +18,7 @@ st.markdown("""
 h1,h2,h3 = st.columns([1.2, 2.5, 1.5])
 with h1:
     try: st.image("logo.png", width=140)
-    except: st.markdown("<div class='card' style='height:130px;display:flex;align-items:center;justify-content:center'><h2 class='gold'>KB</h2></div>", unsafe_allow_html=True)
+    except: st.markdown("<div class='card' style='text-align:center'><h2 class='gold'>KB</h2></div>", unsafe_allow_html=True)
 with h2:
     st.markdown("<h1 style='margin:0'>KB VINULA TRADING</h1>", unsafe_allow_html=True)
     c1,c2 = st.columns(2)
@@ -54,10 +54,10 @@ st.divider()
 g1,g2 = st.columns(2)
 with g1:
     st.markdown("*📈 XAUUSD*")
-    components.html("""<div id="kb_xau_fix" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"OANDA:XAUUSD","interval":"60","theme":"dark","container_id":"kb_xau_fix"})</script>""", height=520)
+    components.html("""<div id="kb_xau_final" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"OANDA:XAUUSD","interval":"60","theme":"dark","container_id":"kb_xau_final"})</script>""", height=520)
 with g2:
     st.markdown("*📉 DXY*")
-    components.html("""<div id="kb_dxy_fix" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"TVC:DXY","interval":"60","theme":"dark","container_id":"kb_dxy_fix"})</script>""", height=520)
+    components.html("""<div id="kb_dxy_final" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"TVC:DXY","interval":"60","theme":"dark","container_id":"kb_dxy_final"})</script>""", height=520)
 
 # CHECKLIST
 st.divider()
@@ -78,10 +78,10 @@ with st.container(border=True):
     else:
         st.error(f"{total}/7 - ESPERA")
 
-# DIARIO - FIX DE TU FOTO
+# DIARIO - FIX DE TU FOTO - TERMINADO
 st.divider()
 st.markdown("### 📂 DIARIO DE TRADING")
-st.info("👇 Toca cualquier casilla y escribe. + abajo para nueva fila.")
+st.info("👇 Toca cualquier casilla y escribe. Dale al + abajo para nueva fila.")
 
 FILE = "trading.xlsx"
 
@@ -95,49 +95,4 @@ def cargar_excel_limpio():
                 fila_header = i
                 break
         df = pd.read_excel(FILE, header=fila_header)
-        df = df.loc[:, ~df.columns.astype(str).str.contains('Unnamed', na=False)]
-        df = df.dropna(how='all')
-        df = df.fillna("")
-        # ARREGLO DE FECHA SIN TRY ANIDADO
-        if "Fecha" in df.columns:
-            df["Fecha"] = pd.to_datetime(df["Fecha"], errors='coerce')
-            df["Fecha"] = df["Fecha"].dt.strftime("%d/%m/%Y")
-            df["Fecha"] = df["Fecha"].fillna("").replace("NaT", "")
-        df = df.replace([0, 0.0, "0.0"], "")
-        
-            
-    
-        return df
-    except:
-        return pd.DataFrame({
-            "Fecha": [datetime.now().strftime("%d/%m/%Y")],
-            "Activo": ["MGC"],
-            "Calendario Economico": [""],
-            "Killzone 08h": [""],
-            "killzone 13h": [""],
-            "tamaño": [0.25],
-            "Resultado": [""],
-            "Comentario": [""]
-        })
-
-if "df_kb_final" not in st.session_state:
-    st.session_state.df_kb_final = cargar_excel_limpio()
-
-editado = st.data_editor(
-    st.session_state.df_kb_final,
-    num_rows="dynamic",
-    use_container_width=True,
-    height=500,
-    key="editor_final_completo"
-)
-
-st.session_state.df_kb_final = editado
-
-b1,b2 = st.columns(2)
-with b1:
-    if st.button("💾 GUARDAR TODO", type="primary", use_container_width=True):
-        editado.to_excel(FILE, index=False)
-        st.success("Guardado!")
-        st.balloons()
-with b2:
-    st.download_button("⬇️ DESCARGAR", editado.to_csv(index=False).encode('utf-8'), "diario_KB.csv", "text/csv", use_container_width=True)
+        df =
