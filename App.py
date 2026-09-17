@@ -1,55 +1,65 @@
 import streamlit as st
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
+import streamlit.components.v1 as components
+import pandas as pd
 
-# --- KB VINUELA - VERSION FONDO BLANCO LECTURA FACIL ---
-st.set_page_config(page_title="KB VINUELA TRADING", layout="wide")
+st.set_page_config(page_title="KB VINUELA TRADING", layout="wide", page_icon="📈")
 
 st.markdown("""
 <style>
     .stApp { background-color: #FFFFFF; }
-    h1 { color: #000000 !important; font-weight: 900 !important; text-align: center; font-size: 42px !important; }
-    .subtitulo { color: #555555; text-align: center; font-size: 16px; margin-bottom: 30px; }
-    .bloque { 
-        color: #000000 !important; 
-        font-size: 26px; 
-        font-weight: 900; 
-        margin-top: 30px; 
-        border-left: 6px solid #000000;
-        padding-left: 12px;
-    }
-    label, p, .stCheckbox label { color: #000000 !important; font-size: 16px !important; }
-    .caja-espera { background-color: #FFF3CD; color: #000000; padding: 18px; border-radius: 8px; font-weight: bold; border: 2px solid #FFC107; text-align: center; margin-top: 20px; }
-    .caja-ok { background-color: #D4EDDA; color: #000000; padding: 18px; border-radius: 8px; font-weight: bold; border: 2px solid #28A745; text-align: center; margin-top: 20px; }
-    .caja-no { background-color: #F8D7DA; color: #000000; padding: 18px; border-radius: 8px; font-weight: bold; border: 2px solid #DC3545; text-align: center; margin-top: 20px; }
+    h1 { color: #000000 !important; font-weight: 900 !important; text-align: center; font-size: 38px !important; }
+    .regla-oro { background-color: #000000; color: #FFD60A !important; padding: 12px; border-radius: 8px; text-align: center; font-weight: 900; font-size: 18px; margin: 15px 0px; }
+    .bloque { color: #000000 !important; font-size: 24px; font-weight: 900; margin-top: 25px; border-left: 6px solid #000000; padding-left: 12px; }
+    label, p { color: #000000 !important; }
+    .caja-espera { background-color: #FFF3CD; color: #000000; padding: 16px; border-radius: 8px; font-weight: bold; border: 2px solid #FFC107; text-align: center; margin-top: 15px; }
+    .caja-ok { background-color: #D4EDDA; color: #000000; padding: 16px; border-radius: 8px; font-weight: bold; border: 2px solid #28A745; text-align: center; margin-top: 15px; font-size: 19px; }
+    .caja-no { background-color: #F8D7DA; color: #000000; padding: 16px; border-radius: 8px; font-weight: bold; border: 2px solid #DC3545; text-align: center; margin-top: 15px; }
+    .reloj { background-color: #F0F0F0; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #DDD; }
 </style>
 """, unsafe_allow_html=True)
 
+if 'c1' not in st.session_state: st.session_state.c1 = False
+if 'c2' not in st.session_state: st.session_state.c2 = False
+if 'c3' not in st.session_state: st.session_state.c3 = False
+if 'c4' not in st.session_state: st.session_state.c4 = False
+if 'c5' not in st.session_state: st.session_state.c5 = False
+if 'bitacora' not in st.session_state: st.session_state.bitacora = []
+
 try:
-    sevilla_tz = pytz.timezone('Europe/Madrid')
-    ahora_sev = datetime.now(sevilla_tz).strftime("%H:%M")
+    st.image("logo.png", width=150)
 except:
-    ahora_sev = datetime.now().strftime("%H:%M")
+    pass
 
 st.markdown("<h1>KB VINUELA TRADING</h1>", unsafe_allow_html=True)
-st.markdown(f"<div class='subtitulo'>Sevilla {ahora_sev} | NY 10:00-13:00</div>", unsafe_allow_html=True)
 
-st.markdown('<div class="bloque">BLOQUE A</div>', unsafe_allow_html=True)
-noticias = st.selectbox("Noticias rojas?", ["No - Verde", "Si - Hay rojas, no operar", "Precaucion"])
+sevilla_tz = pytz.timezone('Europe/Madrid')
+ny_tz = pytz.timezone('America/New_York')
+ahora_sev = datetime.now(sevilla_tz)
+ahora_ny = datetime.now(ny_tz)
+ny_inicio = ahora_ny.replace(hour=10, minute=0, second=0, microsecond=0)
+ny_fin = ahora_ny.replace(hour=13, minute=0, second=0, microsecond=0)
 
-st.markdown('<div class="bloque">BLOQUE B - 5 pasos</div>', unsafe_allow_html=True)
-c1 = st.checkbox("1. Zona azul 6m tocada")
-c2 = st.checkbox("2. Rechazo H4")
-c3 = st.checkbox("3. BOS H1")
-c4 = st.checkbox("4. FVG 15m")
-c5 = st.checkbox("5. SL puesto")
-
-checks = sum([c1,c2,c3,c4,c5])
-
-if noticias != "No - Verde":
-    st.markdown('<div class="caja-no">⛔ NO OPERAR - Noticias rojas</div>', unsafe_allow_html=True)
-elif checks == 5:
-    st.markdown('<div class="caja-ok">✅ SETUP VALIDO - PUEDES ENTRAR</div>', unsafe_allow_html=True)
-    st.balloons()
+if ahora_ny < ny_inicio:
+    diff = ny_inicio - ahora_ny
+    estado_ny = f"⏳ NY abre en {diff.seconds//3600}h {(diff.seconds%3600)//60}m"
+elif ahora_ny > ny_fin:
+    estado_ny = "🔴 Sesion NY cerrada"
 else:
-    st.markdown(f'<div class="caja-espera">Esperando setup ({checks}/5)</div>', unsafe_allow_html=True)
+    diff = ny_fin - ahora_ny
+    estado_ny = f"🟢 NY EN VIVO - Cierra en {diff.seconds//3600}h {(diff.seconds%3600)//60}m"
+
+col_h1, col_h2, col_h3 = st.columns([2,2,1])
+with col_h1:
+    st.markdown(f"<div class='reloj'>Sevilla {ahora_sev.strftime('%H:%M:%S')}</div>", unsafe_allow_html=True)
+with col_h2:
+    st.markdown(f"<div class='reloj'>{estado_ny}</div>", unsafe_allow_html=True)
+with col_h3:
+    if st.button("🔄 RESET", use_container_width=True):
+        st.session_state.c1 = False
+        st.session_state.c2 = False
+        st.session_state.c3 = False
+        st.session_state.c4 = False
+        st.session_state.c5 = False
+        st.rerun()
