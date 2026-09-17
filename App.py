@@ -1,91 +1,116 @@
 import streamlit as st
+import streamlit.components.v1 as components
 from datetime import datetime
 import pytz
-import pandas as pd
 
-st.set_page_config(page_title="KB VINUELA TRADING", layout="wide")
+st.set_page_config(page_title="KB VINUELA TRADING", layout="wide", page_icon="logo.png")
 
+# --- ESTILO ---
 st.markdown("""
 <style>
     .stApp { background-color: #FFFFFF; }
-    h1 { color: #000000 !important; font-weight: 900 !important; text-align: center; }
-    .regla-oro { background-color: #000000; color: #FFD60A !important; padding: 12px; border-radius: 8px; text-align: center; font-weight: 900; font-size: 18px; margin: 15px 0px; }
-    .bloque { color: #000000 !important; font-size: 22px; font-weight: 900; margin-top: 25px; border-left: 6px solid #000000; padding-left: 10px; }
-    .reloj { background-color: #F0F0F0; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #DDD; font-weight: bold; }
-    .caja-ok { background-color: #D4EDDA; color: #000000; padding: 15px; border-radius: 8px; font-weight: bold; border: 2px solid #28A745; text-align: center; margin-top: 15px; font-size: 18px; }
-    .caja-espera { background-color: #FFF3CD; color: #000000; padding: 15px; border-radius: 8px; font-weight: bold; border: 2px solid #FFC107; text-align: center; margin-top: 15px; }
+    .gold-bar { background: #111; color: #FFD60A; text-align: center; padding: 12px; font-weight: bold; border-radius: 8px; margin: 10px 0px; }
+    .block-title { font-size: 22px; font-weight: 900; border-left: 6px solid #111; padding-left: 10px; margin-top: 15px;}
 </style>
 """, unsafe_allow_html=True)
 
-if 'bitacora' not in st.session_state:
-    st.session_state.bitacora = []
+# --- HEADER CON LOGO ---
+col_logo, col_title = st.columns([1, 4])
+with col_logo:
+    try:
+        st.image("logo.png", width=140)
+    except:
+        st.write("KB")
+with col_title:
+    st.markdown("<h1 style='margin-top:25px; font-weight:900; letter-spacing: -1px;'>KB VINUELA TRADING</h1>", unsafe_allow_html=True)
 
-# LOGO
-c1,c2 = st.columns([1,5])
-with c1:
-    try: st.image("logo.png", width=120)
-    except: st.markdown("<h1>KB</h1>", unsafe_allow_html=True)
-with c2: st.markdown("<h1>KB VINUELA TRADING</h1>", unsafe_allow_html=True)
+# --- RELOJES ---
+tz_sevilla = pytz.timezone('Europe/Madrid')
+tz_ny = pytz.timezone('America/New_York')
+now_sevilla = datetime.now(tz_sevilla).strftime("%H:%M:%S")
+now_ny = datetime.now(tz_ny).strftime("%H:%M:%S")
 
-sevilla_tz = pytz.timezone('Europe/Madrid')
-ny_tz = pytz.timezone('America/New_York')
-ahora_sev = datetime.now(sevilla_tz)
-ahora_ny = datetime.now(ny_tz)
+c1, c2 = st.columns(2)
+c1.info(f"*Sevilla: {now_sevilla}*")
+c2.info(f"*NY: {now_ny}*")
 
-col1,col2,col3 = st.columns([2,2,1])
-with col1: st.markdown(f"<div class='reloj'>Sevilla: {ahora_sev.strftime('%H:%M:%S')}</div>", unsafe_allow_html=True)
-with col2: st.markdown(f"<div class='reloj'>NY: {ahora_ny.strftime('%H:%M:%S')}</div>", unsafe_allow_html=True)
-with col3:
-    if st.button("RESET"): st.session_state.clear(); st.rerun()
+st.markdown('<div class="gold-bar">REGLA DE ORO: SIN 5/5 NO HAY TRADE</div>', unsafe_allow_html=True)
 
-st.markdown("<div class='regla-oro'>REGLA DE ORO: SIN 5/5 NO HAY TRADE</div>", unsafe_allow_html=True)
-
+# --- BLOQUES ---
 colA, colB = st.columns(2)
 with colA:
-    st.markdown('<div class="bloque">BLOQUE A</div>', unsafe_allow_html=True)
-    noticias = st.selectbox("Noticias rojas?", ["No - Verde", "Si - Hay rojas"])
-    par = st.selectbox("Par", ["XAUUSD - ORO", "DXY"])
+    st.markdown('<div class="block-title">BLOQUE A</div>', unsafe_allow_html=True)
+    noticias = st.selectbox("Noticias rojas?", ["No - Verde", "Si - Rojo, NO TRADE"])
+    par = st.selectbox("Par", ["XAUUSD - ORO", "EURUSD", "GBPUSD"])
+
 with colB:
-    st.markdown('<div class="bloque">BLOQUE B</div>', unsafe_allow_html=True)
-    b1 = st.checkbox("1. Zona de interes D1/S1/M1")
-    b2 = st.checkbox("2. Rechazo vela 4H")
-    b3 = st.checkbox("3. BOS H1")
-    b4 = st.checkbox("4. Retraso al FVG 15m")
-    b5 = st.checkbox("5. Confirmacion 5m")
+    st.markdown('<div class="block-title">BLOQUE B</div>', unsafe_allow_html=True)
+    s1 = st.checkbox("1. Zona de interes D1/S1/M1")
+    s2 = st.checkbox("2. Rechazo vela 4H")
+    s3 = st.checkbox("3. BOS H1")
+    s4 = st.checkbox("4. Retraso al FVG 15m")
+    s5 = st.checkbox("5. Confirmacion 5m")
+    score = sum([s1,s2,s3,s4,s5])
+    if score == 5 and noticias == "No - Verde":
+        st.success(f"SETUP PERFECTO ({score}/5) - PUEDES ENTRAR")
+    else:
+        st.warning(f"Esperando setup ({score}/5)")
 
-checks = sum([b1,b2,b3,b4,b5])
-if checks==5:
-    st.markdown('<div class="caja-ok">SETUP VALIDO 5/5</div>', unsafe_allow_html=True)
-    st.balloons()
-else:
-    st.markdown(f'<div class="caja-espera">Esperando setup ({checks}/5)</div>', unsafe_allow_html=True)
+st.divider()
 
-# --- GRAFICOS EN GRANDE REAL ---
-st.markdown("---")
-st.markdown('<div class="bloque">GRAFICO XAUUSD - PANTALLA COMPLETA</div>', unsafe_allow_html=True)
+# --- GRAFICOS GIGANTES ---
+st.markdown('<div class="block-title">GRAFICO XAUUSD - VELAS GRANDES</div>', unsafe_allow_html=True)
 
-st.components.v1.iframe(
-    "https://s.tradingview.com/widgetembed/?frameElementId=tradingview_123&symbol=OANDA%3AXAUUSD&interval=15&hidesidetoolbar=0&hidetoptoolbar=0&symboledit=1&saveimage=1&toolbarbg=f1f3f6&studies=%5B%5D&theme=Light&style=1&timezone=Europe%2FMadrid&withdateranges=1&showpopupbutton=1&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=es&utm_source=widget&utm_medium=widget&utm_campaign=chart&utm_term=OANDA%3AXAUUSD",
-    height=800,
-    scrolling=False
-)
+# XAUUSD 800px alto
+tradingview_xau = """
+<div class="tradingview-widget-container" style="height:100%;width:100%">
+  <div id="tradingview_xau" style="height:800px;width:100%"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+  new TradingView.widget(
+  {
+  "autosize": true,
+  "symbol": "OANDA:XAUUSD",
+  "interval": "60",
+  "timezone": "Europe/Madrid",
+  "theme": "light",
+  "style": "1",
+  "locale": "es",
+  "enable_publishing": false,
+  "allow_symbol_change": true,
+  "hide_side_toolbar": false,
+  "save_image": true,
+  "studies": ["STD;Supertrend"],
+  "container_id": "tradingview_xau"
+}
+  );
+  </script>
+</div>
+"""
+components.html(tradingview_xau, height=820)
 
-st.markdown('<div class="bloque">DXY - CONFIRMACION</div>', unsafe_allow_html=True)
-st.components.v1.iframe(
-    "https://s.tradingview.com/widgetembed/?symbol=TVC%3ADXY&interval=60&hidesidetoolbar=0&hidetoptoolbar=0&theme=Light&style=1&timezone=Europe%2FMadrid&locale=es",
-    height=600
-)
+st.markdown('<div class="block-title">DXY - CONFIRMACION DOLAR</div>', unsafe_allow_html=True)
 
-# BITACORA
-st.markdown("---")
-st.markdown('<div class="bloque">BITACORA</div>', unsafe_allow_html=True)
-r1,r2,r3,r4 = st.columns(4)
-with r1: res = st.selectbox("Resultado", ["Pendiente","WIN","LOSS","BE"])
-with r2: ent = st.text_input("Entrada")
-with r3: sl = st.text_input("SL")
-with r4: notas = st.text_input("Notas")
-if st.button("Guardar"):
-    st.session_state.bitacora.append({"Fecha": ahora_sev.strftime("%d/%m %H:%M"), "Par": par, "Res": res, "Ent": ent, "SL": sl, "Checks": f"{checks}/5", "Notas": notas})
-    st.success("Guardado")
-if st.session_state.bitacora:
-    st.dataframe(pd.DataFrame(st.session_state.bitacora), use_container_width=True)
+tradingview_dxy = """
+<div class="tradingview-widget-container" style="height:100%;width:100%">
+  <div id="tradingview_dxy" style="height:600px;width:100%"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+  <script type="text/javascript">
+  new TradingView.widget(
+  {
+  "autosize": true,
+  "symbol": "TVC:DXY",
+  "interval": "60",
+  "timezone": "Europe/Madrid",
+  "theme": "light",
+  "style": "1",
+  "locale": "es",
+  "enable_publishing": false,
+  "allow_symbol_change": true,
+  "container_id": "tradingview_dxy"
+}
+  );
+  </script>
+</div>
+"""
+components.html(tradingview_dxy, height=620)
