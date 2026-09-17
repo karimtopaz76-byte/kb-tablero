@@ -1,4 +1,4 @@
-import streamlit as st
+    import streamlit as st
 import streamlit.components.v1 as components
 from datetime import datetime
 import pytz
@@ -73,10 +73,39 @@ with colB:
         st.error("HOY NO SE OPERA - NOTICIA ROJA 3 ESTRELLAS")
     else:
         st.warning(f"Esperando {score}/5")
-
 st.divider()
 st.markdown("<div class='block-title'>GRAFICO XAUUSD 800PX</div>", unsafe_allow_html=True)
-components.html('<div id="tv_xau" style="height:800px;width:100%"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"OANDA:XAUUSD","interval":"60","timezone":"Europe/Madrid","theme":"light","style":"1","locale":"es","container_id":"tv_xau"});</script>', height=820)
+components.html("""
+<div id="tv_xau" style="height:800px;width:100%"></div>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+new TradingView.widget({
+  "autosize": true,
+  "symbol": "OANDA:XAUUSD",
+  "interval": "60",
+  "timezone": "Europe/Madrid",
+  "theme": "light",
+  "style": "1",
+  "locale": "es",
+  "container_id": "tv_xau"
+});
+</script>
+""", height=820)
 
 st.markdown("<div class='block-title'>DXY 600PX</div>", unsafe_allow_html=True)
-components.html('<div id="tv_dxy" style="height:600px;width:100%"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"TVC:DXY","interval":"60","timezone":"Europe/Madrid","theme":"light","style":"1","locale":"es","container_id":"tv_dxy"});</script>', height=620)
+components.html("""
+<div id="tv_dxy_final" style="height:600px;width:100%"></div>
+<script src="https://s3.tradingview.com/tv.js"></script>
+<script>
+new TradingView.widget({
+  "autosize": true,
+  "symbol": "CAPITALCOM:DXY",
+  "interval": "60",
+  "timezone": "Europe/Madrid",
+  "theme": "light",
+  "style": "1",
+  "locale": "es",
+  "container_id": "tv_dxy_final"
+});
+</script>
+""", height=620)
