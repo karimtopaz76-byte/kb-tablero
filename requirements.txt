@@ -1,4 +1,4 @@
 streamlit
-Pandas
-Openpyxl
-Pytz
+pandas
+openpyxl
+pytz
