@@ -1,37 +1,55 @@
 import streamlit as st
 from datetime import datetime
-import pytz, pandas as pd
-st.set_page_config(page_title="KB Trading", layout="centered")
-st.markdown("<style>.stApp{background:#0a0a0a;} h1,h2{color:#D4AF37 !important;}</style>", unsafe_allow_html=True)
-st.markdown("<h1 style='text-align:center;'>KB VINUELA TRADING</h1>", unsafe_allow_html=True)
-sevilla = pytz.timezone('Europe/Madrid')
-ahora = datetime.now(sevilla)
-st.caption(f"Sevilla {ahora.strftime('%H:%M')} | NY 10:00-13:00")
-st.header("BLOQUE A")
-news = st.selectbox("Noticias rojas?", ["No - Verde", "SI ROJO"])
-st.header("BLOQUE B - 5 pasos")
+import pytz
+
+# --- KB VINUELA - VERSION FONDO BLANCO LECTURA FACIL ---
+st.set_page_config(page_title="KB VINUELA TRADING", layout="wide")
+
+st.markdown("""
+<style>
+    .stApp { background-color: #FFFFFF; }
+    h1 { color: #000000 !important; font-weight: 900 !important; text-align: center; font-size: 42px !important; }
+    .subtitulo { color: #555555; text-align: center; font-size: 16px; margin-bottom: 30px; }
+    .bloque { 
+        color: #000000 !important; 
+        font-size: 26px; 
+        font-weight: 900; 
+        margin-top: 30px; 
+        border-left: 6px solid #000000;
+        padding-left: 12px;
+    }
+    label, p, .stCheckbox label { color: #000000 !important; font-size: 16px !important; }
+    .caja-espera { background-color: #FFF3CD; color: #000000; padding: 18px; border-radius: 8px; font-weight: bold; border: 2px solid #FFC107; text-align: center; margin-top: 20px; }
+    .caja-ok { background-color: #D4EDDA; color: #000000; padding: 18px; border-radius: 8px; font-weight: bold; border: 2px solid #28A745; text-align: center; margin-top: 20px; }
+    .caja-no { background-color: #F8D7DA; color: #000000; padding: 18px; border-radius: 8px; font-weight: bold; border: 2px solid #DC3545; text-align: center; margin-top: 20px; }
+</style>
+""", unsafe_allow_html=True)
+
+try:
+    sevilla_tz = pytz.timezone('Europe/Madrid')
+    ahora_sev = datetime.now(sevilla_tz).strftime("%H:%M")
+except:
+    ahora_sev = datetime.now().strftime("%H:%M")
+
+st.markdown("<h1>KB VINUELA TRADING</h1>", unsafe_allow_html=True)
+st.markdown(f"<div class='subtitulo'>Sevilla {ahora_sev} | NY 10:00-13:00</div>", unsafe_allow_html=True)
+
+st.markdown('<div class="bloque">BLOQUE A</div>', unsafe_allow_html=True)
+noticias = st.selectbox("Noticias rojas?", ["No - Verde", "Si - Hay rojas, no operar", "Precaucion"])
+
+st.markdown('<div class="bloque">BLOQUE B - 5 pasos</div>', unsafe_allow_html=True)
 c1 = st.checkbox("1. Zona azul 6m tocada")
 c2 = st.checkbox("2. Rechazo H4")
 c3 = st.checkbox("3. BOS H1")
 c4 = st.checkbox("4. FVG 15m")
 c5 = st.checkbox("5. SL puesto")
-if "No" in news and c1 and c2 and c3 and c4 and c5:
-    st.success("TODO VERDE - ENTRAR CORTO")
+
+checks = sum([c1,c2,c3,c4,c5])
+
+if noticias != "No - Verde":
+    st.markdown('<div class="caja-no">⛔ NO OPERAR - Noticias rojas</div>', unsafe_allow_html=True)
+elif checks == 5:
+    st.markdown('<div class="caja-ok">✅ SETUP VALIDO - PUEDES ENTRAR</div>', unsafe_allow_html=True)
+    st.balloons()
 else:
-    st.warning("Esperando setup")
-if "trades" not in st.session_state:
-    st.session_state.trades = []
-with st.form("f"):
-    e = st.number_input("Entrada", value=2580.0)
-    s = st.number_input("SL", value=2590.0)
-    t = st.number_input("TP", value=2550.0)
-    rr = abs(t-e)/abs(e-s) if e!=s else 0
-    st.metric("RR", f"1:{rr:.2f}")
-    res = st.selectbox("Resultado", ["Pendiente","Ganado","Perdido"])
-    nota = st.text_input("Nota", value="FVG + azul 6m")
-    ok = st.form_submit_button("Guardar Trade")
-    if ok:
-        st.session_state.trades.append({"Fecha":ahora.strftime("%d/%m"), "E":e, "SL":s, "TP":t, "RR":f"1:{rr:.2f}", "Res":res, "Nota":nota})
-        st.success("Guardado")
-if st.session_state.trades:
-    st.dataframe(pd.DataFrame(st.session_state.trades))
+    st.markdown(f'<div class="caja-espera">Esperando setup ({checks}/5)</div>', unsafe_allow_html=True)
