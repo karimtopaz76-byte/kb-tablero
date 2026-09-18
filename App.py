@@ -40,10 +40,7 @@ with col_pilar:
     with st.container(border=True):
         st.markdown("**1. IPC USA**")
         ipc = st.slider("ipc", 0.0, 8.0, 3.2, 0.1, label_visibility="collapsed")
-        if ipc > 4:
-            st.error(f"IPC {ipc}% ALTO = Oro BAJA")
-        else:
-            st.success(f"IPC {ipc}%")
+        st.success(f"IPC {ipc}%")
         st.markdown("**2. NFP**")
         st.selectbox("nfp", ["Fuerte +200k - Oro baja","Medio","Débil <100k - Oro sube"], label_visibility="collapsed")
         st.markdown("**3. TASAS FED**")
@@ -54,24 +51,31 @@ with col_pilar:
         st.info("Killzone 08-11h y 14-17h")
 
 st.divider()
-st.markdown("#### 📺 TV NOTICIAS + DXY")
+st.markdown("#### 📺 NOTICIAS ECONOMIA + DXY")
 
 components.html("""<div style="background:#000; border:2px solid #FFD60A; border-radius:8px; padding:10px; color:#FFD60A; font-family:monospace; overflow:hidden"><marquee scrollamount="7">🔴 EN VIVO | XAUUSD | DXY | KILLZONE 14-17h | SOLO 3 ESTRELLAS |</marquee></div>""", height=60)
 
-col_tv, col_dxy = st.columns([1.2, 1])
+col_tv, col_dxy = st.columns([1, 1])
 
 with col_tv:
-    st.markdown("**TV ECONOMIA 24H - NOTICIAS REALES**")
-    components.html("""<iframe src="https://www.investing.com/news/forex-news" width="100%" height="550" style="border:1px solid #ccc; border-radius:8px; background:white"></iframe>""", height=570)
+    st.markdown("**TV NOTICIAS - OPCION B - 100% ESTABLE**")
+    with st.container(border=True):
+        st.markdown("Pulsa para ver noticias en vivo (abre en otra pestaña, no rompe la app)")
+        st.link_button("📈 ABRIR FOREX NEWS - INVESTING", "https://www.investing.com/news/forex-news", use_container_width=True)
+        st.link_button("📉 ABRIR BLOOMBERG MARKETS LIVE", "https://www.bloomberg.com/live", use_container_width=True)
+        st.link_button("🌍 ABRIR EURONEWS ECONOMIA", "https://es.euronews.com/business", use_container_width=True)
+        st.divider()
+        st.markdown("**Resumen ORO hoy:**")
+        st.info("DXY y XAUUSD inversos. Si DXY sube, Oro baja. Revisa calendario 3* antes de entrar.")
 
 with col_dxy:
     st.markdown("**📉 DXY - DOLAR INDEX**")
     components.html("""
-<div id="dxy_v49" style="height:550px"></div>
+<div id="dxy_v50" style="height:550px"></div>
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script type="text/javascript">
 new TradingView.widget({
-"container_id": "dxy_v49",
+"container_id": "dxy_v50",
 "width": "100%",
 "height": 550,
 "symbol": "TVC:DXY",
@@ -88,11 +92,11 @@ new TradingView.widget({
 st.divider()
 st.markdown("#### 📈 XAUUSD - GRAFICO PRINCIPAL")
 components.html("""
-<div id="xau_v49" style="height:550px"></div>
+<div id="xau_v50" style="height:550px"></div>
 <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 <script type="text/javascript">
 new TradingView.widget({
-"container_id": "xau_v49",
+"container_id": "xau_v50",
 "width": "100%",
 "height": 550,
 "symbol": "OANDA:XAUUSD",
@@ -143,7 +147,7 @@ def cargar():
 
 if "df" not in st.session_state:
     st.session_state.df=cargar()
-edit=st.data_editor(st.session_state.df, num_rows="dynamic", use_container_width=True, height=350, key="ed_v49")
+edit=st.data_editor(st.session_state.df, num_rows="dynamic", use_container_width=True, height=350, key="ed_v50")
 st.session_state.df=edit
 if st.button("💾 GUARDAR TODO", type="primary", use_container_width=True):
     edit.to_excel(FILE, index=False)
