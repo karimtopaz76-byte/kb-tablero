@@ -1,4 +1,4 @@
- import streamlit as st
+import streamlit as st
 from datetime import datetime
 import pytz
 from streamlit_autorefresh import st_autorefresh
