@@ -6,12 +6,26 @@ import pytz
 
 st.set_page_config(page_title="KB VINULA TRADING", layout="wide")
 
-# CABECERA
+# ESTILO DORADO
+st.markdown("""
+<style>
+.gold {color:#C9A86A!important; font-weight:900; text-align:center; letter-spacing:2px;}
+.logo-box {background:#1a0f0f; border:2px solid #C9A86A; padding:10px; text-align:center; border-radius:8px;}
+</style>
+""", unsafe_allow_html=True)
+
+# CABECERA CON LOGO + DORADO
 c1,c2,c3 = st.columns([1,2,1])
 with c1:
-    st.markdown("## KB VINULA")
+    try:
+        st.image("logo.png", width=150)
+    except:
+        st.markdown('<div class="logo-box"><div style="color:#C9A86A; font-size:32px; font-weight:900;">KB</div><div style="color:#C9A86A; font-size:10px;">VIÑUELA TRADING</div></div>', unsafe_allow_html=True)
+
 with c2:
-    st.markdown("<h1 style='text-align:center'>KB VINULA TRADING</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='gold'>KB VINULA TRADING</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center; color:#C9A86A;'>FRANCOTIRADOR ORO / DXY</p>", unsafe_allow_html=True)
+
 with c3:
     madrid = datetime.now(pytz.timezone('Europe/Madrid'))
     fecha_txt = str(madrid.day) + "/" + str(madrid.month) + "/" + str(madrid.year) + " " + str(madrid.hour) + ":" + str(madrid.minute)
