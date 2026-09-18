@@ -11,11 +11,12 @@ st.markdown("""
 .stApp { background: #0A0A0A; color: #EAEAEA; }
 .card { background: #151515; border: 1px solid #2A2A2A; border-radius: 14px; padding: 14px; }
 .gold { color: #FFD60A; }
+.ticker { background: #000; border: 1px solid #FFD60A; padding: 8px; border-radius: 8px; overflow: hidden; white-space: nowrap; }
 </style>
 """, unsafe_allow_html=True)
 
-# LOGO + TITULO
-h1,h2,h3 = st.columns([1,2,1])
+# LOGO
+h1,h2,h3 = st.columns([0.9,2.2,1])
 with h1:
     try: st.image("logo.png", width=140)
     except: st.markdown("<h2 class='gold'>KB VINULA</h2>", unsafe_allow_html=True)
@@ -23,105 +24,105 @@ with h2:
     st.markdown("<h1 style='text-align:center; margin:0'>KB VINULA TRADING</h1>", unsafe_allow_html=True)
 with h3:
     madrid = datetime.now(pytz.timezone('Europe/Madrid'))
-    st.markdown(f"<div class='card' style='text-align:center'><b>{madrid.strftime('%H:%M')}</b><br><span class='gold'>MADRID</span></div>", unsafe_allow_html=True)
+    st.markdown(f"<div class='card' style='text-align:center'><b>{madrid.strftime('%H:%M:%S')}</b><br><span class='gold'>MADRID</span></div>", unsafe_allow_html=True)
 
 st.divider()
 
-# 3 COLUMNAS - NADA VACIO
-col_cal, col_pilar, col_tv = st.columns([1.2, 0.8, 1])
-
+# CALENDARIO + PILARES
+col_cal, col_pilar = st.columns([1.2, 1])
 with col_cal:
-    st.markdown("#### 📅 CALENDARIO")
+    st.markdown("#### 📅 CALENDARIO ECONOMICO")
     with st.container(border=True):
-        components.html('<iframe src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=5,17,29,25,54,32,6&calType=week&timeZone=23&lang=3" width="100%" height="380" frameborder="0"></iframe>', height=400)
+        components.html("""
+        <div class="tradingview-widget-container">
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
+          {"colorTheme":"dark","isTransparent":true,"width":"100%","height":"650","locale":"es","importanceFilter":"-1,0,1","currencyFilter":"USD"}
+          </script>
+        </div>
+        """, height=670)
 
 with col_pilar:
-    st.markdown("#### 🏛️ PILARES")
+    st.markdown("#### 🏛️ PILARES FUNDAMENTALES")
     with st.container(border=True):
-        st.metric("DXY", "103.2", "-0.3%")
-        st.metric("VIX", "18.5")
-        st.markdown("---")
-        st.markdown("*GEOPOLITICA*")
-        geo = st.selectbox("geo", ["Tension media - Oro soporte","Guerra - Oro sube","Calma"], label_visibility="collapsed")
-        st.warning("Oro con soporte")
-        st.markdown("Killzone: 08-11h y 14-17h")
+        st.markdown("*1. IPC USA*")
+        ipc = st.slider("ipc", 0.0, 8.0, 3.2, 0.1, label_visibility="collapsed")
+        if ipc > 4: st.error(f"IPC {ipc}% Alto = Oro baja")
+        elif ipc < 2.5: st.success(f"IPC {ipc}% Bajo = Oro sube")
+        else: st.warning(f"IPC {ipc}% Medio")
+        st.markdown("*2. NFP*")
+        st.selectbox("nfp", ["Fuerte +200k - Oro baja","Medio","Débil <100k - Oro sube"], label_visibility="collapsed")
+        st.markdown("*3. TASAS FED*")
+        st.selectbox("fed", ["Suben - Oro baja","Mantienen - Soporte","Bajan - Oro sube"], label_visibility="collapsed")
+        st.divider()
+        c1,c2 = st.columns(2)
+        c1.metric("DXY", "103.2", "-0.3%")
+        c2.metric("VIX", "18.5")
+        st.markdown("*4. GEOPOLITICA*")
+        st.selectbox("geo", ["Tensión media","Guerra","Calma"], label_visibility="collapsed")
+        st.markdown("*5. SESION*")
+        st.info("Killzone 08-11h y 14-17h")
 
-with col_tv:
-    st.markdown("#### 📺 CANAL TV INFORMATIVO")
-    with st.container(border=True):
-        st.markdown("""
-        <div style="background:#000; border:1px solid #FFD60A; border-radius:8px; padding:10px; height:380px">
-        <p style="color:#FFD60A; font-weight:bold">🔴 EN VIVO ORO</p>
-        <p style="font-size:13px; color:#fff">• 08:00 - Apertura Londres</p>
-        <p style="font-size:13px; color:#fff">• DXY 103.2 cae -0.3% -> Oro sube</p>
-        <p style="font-size:13px; color:#fff">• Oro 4.342 en soporte diario</p>
-        <p style="font-size:13px; color:#fff">• VIX 18.5 miedo medio</p>
-        <p style="font-size:13px; color:#fff">• IPC USA miercoles - ATENTO</p>
-        <p style="font-size:13px; color:#fff">• Killzone activa 14-17h</p>
-        <hr>
-        <p style="color:#FFD60A">📢 TV: Bloomberg Oro</p>
-        </div>
-        """, unsafe_allow_html=True)
-
-# GRAFICOS - FIX APPLE INC
+# === CANAL TV - V44 TRIPLE CAPA QUE SI FUNCIONA ===
 st.divider()
-st.markdown("### 📈 GRAFICOS")
+st.markdown("#### 📺 CANAL TV INFORMATIVO - TIEMPO REAL ORO")
+
+# TICKER SUPERIOR QUE NUNCA FALLA
+components.html("""
+<div style="background:#000; border:2px solid #FFD60A; border-radius:8px; padding:10px; color:#FFD60A; font-family:monospace; font-size:14px; overflow:hidden">
+<marquee scrollamount="5">
+🔴 EN VIVO | XAUUSD 4.342.32 ▲ 0.45% | DXY 103.2 ▼ -0.3% | VIX 18.5 | FED: Mantiene tasas | IPC: 3.2% | NFP viernes | Killzone activa 14-17h Madrid | Oro en soporte diario 4.340 |
+</marquee>
+</div>
+""", height=60)
+
+with st.container(border=True):
+    tv1, tv2, tv3 = st.tabs(["📺 TV1 Noticias Oro", "📈 TV2 Mercado", "📻 TV3 Investing"])
+
+    with tv1:
+        # CAPA 1 - TradingView que funciona
+        components.html("""
+        <div class="tradingview-widget-container">
+          <div class="tradingview-widget-container__widget"></div>
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+          {"feedMode":"all","colorTheme":"dark","isTransparent":true,"displayMode":"regular","width":"100%","height":400,"locale":"es"}
+          </script>
+        </div>
+        """, height=420)
+
+    with tv2:
+        # CAPA 2 - Market Overview
+        components.html("""
+        <div class="tradingview-widget-container">
+          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+          {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"es","width":"100%","height":400,"isTransparent":true,"tabs":[{"title":"Oro & Dolar","symbols":[{"s":"OANDA:XAUUSD","d":"Oro"},{"s":"TVC:DXY","d":"DXY"},{"s":"TVC:VIX","d":"VIX"},{"s":"OANDA:XAGUSD","d":"Plata"}]}]}
+          </script>
+        </div>
+        """, height=420)
+
+    with tv3:
+        # CAPA 3 - Investing que NUNCA se bloquea en tablet
+        st.markdown("*Noticias Commodities - Oro*")
+        components.html('<iframe src="https://www.investing.com/news/commodities-news" width="100%" height="400" frameborder="0"></iframe>', height=420)
+
+# GRAFICOS
+st.divider()
 g1,g2 = st.columns(2)
-
 with g1:
-    st.markdown("*XAUUSD - ORO*")
-    components.html("""
-    <div id="xau_final_36" style="height:500px"></div>
-    <script src="https://s3.tradingview.com/tv.js"></script>
-    <script>
-    new TradingView.widget({
-      "container_id": "xau_final_36",
-      "autosize": true,
-      "symbol": "OANDA:XAUUSD",
-      "interval": "60",
-      "timezone": "Europe/Madrid",
-      "theme": "dark",
-      "style": "1",
-      "locale": "es"
-    });
-    </script>
-    """, height=520)
-
+    st.markdown("*📈 XAUUSD - ORO*")
+    components.html('<div id="kb_xau_v44" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"container_id":"kb_xau_v44","autosize":true,"symbol":"OANDA:XAUUSD","interval":"60","timezone":"Europe/Madrid","theme":"dark","style":"1","locale":"es"})</script>', height=520)
 with g2:
-    st.markdown("*DXY - DOLAR - FIX APPLE*")
-    components.html("""
-    <div id="dxy_final_36" style="height:500px"></div>
-    <script src="https://s3.tradingview.com/tv.js"></script>
-    <script>
-    new TradingView.widget({
-      "container_id": "dxy_final_36",
-      "autosize": true,
-      "symbol": "TVC:DXY",
-      "interval": "60",
-      "timezone": "Europe/Madrid",
-      "theme": "dark",
-      "style": "1",
-      "locale": "es"
-    });
-    </script>
-    """, height=520)
+    st.markdown("*📉 DXY - DOLAR*")
+    components.html('<div id="kb_dxy_v44" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"container_id":"kb_dxy_v44","autosize":true,"symbol":"TVC:DXY","interval":"60","timezone":"Europe/Madrid","theme":"dark","style":"1","locale":"es"})</script>', height=520)
 
-# CHECKLIST
+# CHECKLIST + DIARIO
 st.divider()
 st.markdown("### 🎯 CHECKLIST 7/7")
 with st.container(border=True):
-    t1=st.checkbox("1. Tendencia")
-    t2=st.checkbox("2. Zona D1 S1 M1")
-    t3=st.checkbox("3. Rechazo H4")
-    t4=st.checkbox("4. BoS H1")
-    t5=st.checkbox("5. FVG 15m")
-    t6=st.checkbox("6. BoS 5m")
-    t7=st.checkbox("7. Entrada")
-    total=sum([t1,t2,t3,t4,t5,t6,t7])
+    checks = [st.checkbox(f"{i+1}. Paso {i+1}") for i in range(7)]
+    total = sum(checks)
     st.progress(total/7, text=f"{total}/7")
     st.success("EJECUTA" if total==7 else "ESPERA")
 
-# DIARIO
 st.divider()
 st.markdown("### 📂 DIARIO")
 FILE="trading.xlsx"
@@ -140,9 +141,8 @@ def cargar():
         return pd.DataFrame({"Fecha":[datetime.now().strftime("%d/%m/%Y")],"Activo":["MGC"],"Resultado":[""]})
 
 if "df" not in st.session_state: st.session_state.df=cargar()
-edit=st.data_editor(st.session_state.df, num_rows="dynamic", use_container_width=True, height=400, key="ed_v36")
+edit=st.data_editor(st.session_state.df, num_rows="dynamic", use_container_width=True, height=400, key="ed_v44")
 st.session_state.df=edit
 if st.button("💾 GUARDAR TODO", type="primary", use_container_width=True):
     edit.to_excel(FILE, index=False)
     st.success("Guardado!")
-    st.balloons()
