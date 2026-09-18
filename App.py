@@ -76,26 +76,41 @@ components.html("""
 col_tv, col_dxy = st.columns([1.2, 1])
 
 with col_tv:
-    st.markdown("*TV ECONOMIA 24H - FUNCIONA SIEMPRE*")
+       st.markdown("*📺 TV NOTICIAS ECONOMIA - EN VIVO*")
     components.html("""
-    <div style="background:white; border:1px solid #ccc; border-radius:8px; overflow:hidden">
-    <!-- BLOOMBERG LIVE por CANAL - nunca privado -->
-    <iframe width="100%" height="450" 
-    src="https://www.youtube.com/embed/live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg" 
-    title="Bloomberg Live 24h" frameborder="0" 
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-    allowfullscreen>
-    </iframe>
+    <div class="tradingview-widget-container">
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+      {
+        "feedMode": "market",
+        "market": "forex",
+        "colorTheme": "light",
+        "isTransparent": false,
+        "displayMode": "regular",
+        "width": "100%",
+        "height": 550,
+        "locale": "es"
+      }
+      </script>
     </div>
-    """, height=470)
+    """, height=570)
     
-    st.markdown("Si Bloomberg no carga en tu pais, este segundo canal SIEMPRE funciona:")
+    st.markdown("*Noticias ORO especificas:*")
     components.html("""
-    <iframe width="100%" height="280" 
-    src="https://www.youtube.com/embed/live_stream?channel=UCknLrEdhRCp1aegoMqRaA_Q" 
-    title="Euronews Live" frameborder="0" allowfullscreen>
-    </iframe>
-    """, height=300)
+    <div class="tradingview-widget-container">
+      <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
+      {
+        "feedMode": "symbol",
+        "symbol": "OANDA:XAUUSD",
+        "colorTheme": "light",
+        "isTransparent": false,
+        "displayMode": "compact",
+        "width": "100%",
+        "height": 300,
+        "locale": "es"
+      }
+      </script>
+    </div>
+    """, height=320)
 
 with col_dxy:
     st.markdown("*📉 DXY - DOLAR INDEX (ARREGLADO)*")
