@@ -7,15 +7,26 @@ import pytz
 st.set_page_config(page_title="KB VINULA TRADING", layout="wide")
 
 # CABECERA
-col_logo, col_titulo = st.columns([1, 4])
+from datetime import datetime
+import pytz
+
+# CABECERA FIX - LOGO ESQUERDA + HORA MADRID
+col_logo, col_titulo, col_hora = st.columns([1, 3, 1.2])
+
 with col_logo:
     try:
         st.image("logo.png", width=135)
     except:
         st.markdown("## 👑 KB")
+
 with col_titulo:
     st.markdown("## KB VIÑUELA TRADING")
     st.caption("Diario 100% funcional + Escudo")
+
+with col_hora:
+    madrid = datetime.now(pytz.timezone('Europe/Madrid'))
+    hora_txt = f"{madrid.hour:02d}:{madrid.minute:02d} MADRID\n{madrid.day:02d}/{madrid.month:02d}/{madrid.year}"
+    st.info(hora_txt)
 st.divider()
 
 # CALENDARIO + PILARES
