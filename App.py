@@ -4,7 +4,14 @@ import pandas as pd
 from datetime import datetime
 import pytz
 
-st.set_page_config(col_logo, col_titulo = st.columns([1, 4])
+st.set_page_configcol_logo, col_titulo = st.columns([1, 4])
+
+with col_logo:
+    st.image("logo.png", width=140)
+
+with col_titulo:
+    st.markdown("## KB VIÑUELA TRADING")
+    st.caption("MADRID - 18/09/2026 - IPC 3.4% | FED 3.75%-4.00%")
 
 with col_logo:
     st.image("logo.png", width=140)
