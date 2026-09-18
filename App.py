@@ -87,7 +87,7 @@ with st.container(border=True):
 
 # DIARIO 11 COLUMNAS - TODO JUNTO
 st.divider()
-st.markdown("### DIARIO TRADING - 11 COLUMNAS")
+st.markdown("### DIARIO TRADING ")
 FILE="trading.xlsx"
 
 def cargar():
@@ -143,7 +143,7 @@ with col3:
             "Fecha":[fecha_nueva],
             "Activo":["XAUUSD"],
             "Calendario economico":[""],
-            "Nivel de interes":["3.75%-4.00%"],
+            "Zona de interes":["3.75%-4.00%"],
             "Rechazo H4":[""],
             "BOS H1":[""],
             "FVG 15m":[""],
