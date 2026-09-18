@@ -134,28 +134,61 @@ with st.container(border=True):
         st.balloons()
 
 st.divider()
-st.markdown("### 📂 DIARIO TRADING")
+st.divider()
+st.markdown("### 📂 DIARIO TRADING - V52 FIX GUARDADO")
 FILE="trading.xlsx"
+
 def cargar():
     try:
-        tmp=pd.read_excel(FILE, header=None)
-        f=0
-        for i in range(len(tmp)):
-            if "Fecha" in str(tmp.iloc[i].values):
-                f=i
-                break
-        df=pd.read_excel(FILE, header=f)
-        df=df[[c for c in df.columns if "Unnamed" not in str(c)]].dropna(how='all').fillna("")
-        if "Fecha" in df.columns:
-            df["Fecha"]=pd.to_datetime(df["Fecha"], errors='coerce').dt.strftime("%d/%m/%Y").replace("NaT","").fillna("")
-        return df.replace("0.0","")
-    except:
-        return pd.DataFrame({"Fecha":[datetime.now().strftime("%d/%m/%Y")],"Activo":["MGC"],"Resultado":[""]})
+        # Intenta cargar tal cual está, sin buscar cabeceras raras
+        df = pd.read_excel(FILE)
+        # Limpia columnas Unnamed
+        df = df.loc[:, ~df.columns.str.contains('^Unnamed', na=False)]
+        df = df.dropna(how='all').fillna("")
+        return df
+    except Exception as e:
+        # Si no existe, crea base
+        return pd.DataFrame({
+            "Fecha":[datetime.now().strftime("%d/%m/%Y")],
+            "Activo":["MGC"],
+            "Entrada":[""],
+            "Salida":[""],
+            "Resultado":[""],
+            "Notas":[""]
+        })
 
 if "df" not in st.session_state:
-    st.session_state.df=cargar()
-edit=st.data_editor(st.session_state.df, num_rows="dynamic", use_container_width=True, height=350, key="ed_v52")
-st.session_state.df=edit
-if st.button("💾 GUARDAR TODO", type="primary", use_container_width=True):
-    edit.to_excel(FILE, index=False)
-    st.success("Guardado!")
+    st.session_state.df = cargar()
+
+# Editor
+edit = st.data_editor(
+    st.session_state.df, 
+    num_rows="dynamic", 
+    use_container_width=True, 
+    height=350, 
+    key="ed_v52_fix"
+)
+
+col_save1, col_save2 = st.columns(2)
+with col_save1:
+    if st.button("💾 GUARDAR EN APP", type="primary", use_container_width=True):
+        try:
+            st.session_state.df = edit
+            edit.to_excel(FILE, index=False, engine='openpyxl')
+            st.success(f"Guardado en {FILE} - {len(edit)} filas")
+            st.balloons()
+        except Exception as e:
+            st.error(f"Error guardando: {e}")
+
+with col_save2:
+    # Backup para que nunca pierdas nada
+    csv = edit.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        "📥 DESCARGAR BACKUP CSV",
+        csv,
+        f"kb_trading_{datetime.now().strftime('%Y%m%d')}.csv",
+        "text/csv",
+        use_container_width=True
+    )
+
+st.info("IMPORTANTE: En Streamlit Cloud el Excel se borra al reiniciar. Cada día dale a DESCARGAR BACKUP CSV y guárdalo en tu PC. Así nunca pierdes nada.")
