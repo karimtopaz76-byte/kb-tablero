@@ -44,8 +44,8 @@ with col_cal:
 with col_pilar:
     st.markdown("#### PILARES - HOY 18-09-2026")
     with st.container(border=True):
-        st.error("PILAR 1 - IPC USA: 3.4% Agosto - NEUTRO-ALTO = Cuidado ORO")
-        st.warning("PILAR 3 - FED HOY: 3.75% - 4.00% - Subio ayer 17 Sep - Tasa SUBE = DXY SUBE / ORO BAJA CORTO")
+        st.error("1 - IPC USA: 3.4% Agosto - NEUTRO-ALTO = Cuidado ORO")
+        st.warning("3 - FED HOY: 3.75% - 4.00% - Subio ayer 17 Sep - Tasa SUBE = DXY SUBE / ORO BAJA CORTO")
         st.selectbox("NFP", ["Fuerte +200k - Oro baja","Medio","Debil <100k - Oro sube"], label_visibility="collapsed")
         st.selectbox("GEO", ["Calma","Tension media","Guerra - Oro sube"], label_visibility="collapsed")
         st.info("Killzone 08-11h y 14-17h Madrid - DXY 99.67 fuerte")
