@@ -9,15 +9,33 @@ st.set_page_config(page_title="KB VINULA TRADING", layout="wide")
 # CABECERA
 from datetime import datetime
 import pytz
+from streamlit_autorefresh import st_autorefresh
 
-# CABECERA FIX - LOGO ESQUERDA + HORA MADRID
-col_logo, col_titulo, col_hora = st.columns([1, 3, 1.2])
+# Auto-actualiza cada 60 segundos
+st_autorefresh(interval=60 * 1000, key="reloj_madrid")
+
+# CSS dorado sobre negro como tu logo
+st.markdown("""
+<style>
+.hora-oro {
+    background-color: #000000;
+    color: #C9A86A;
+    border: 1.5px solid #C9A86A;
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    font-weight: 700;
+    font-family: serif;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(201,168,106,0.3);
+}
+</style>
+""", unsafe_allow_html=True)
+
+col_logo, col_titulo, col_hora = st.columns([1, 3, 1.3])
 
 with col_logo:
-    try:
-        st.image("logo.png", width=135)
-    except:
-        st.markdown("## 👑 KB")
+    st.image("logo.png", width=140)
 
 with col_titulo:
     st.markdown("## KB VIÑUELA TRADING")
@@ -25,8 +43,13 @@ with col_titulo:
 
 with col_hora:
     madrid = datetime.now(pytz.timezone('Europe/Madrid'))
-    hora_txt = f"{madrid.hour:02d}:{madrid.minute:02d} MADRID\n{madrid.day:02d}/{madrid.month:02d}/{madrid.year}"
-    st.info(hora_txt)
+    hora_html = f"""
+    <div class="hora-oro">
+        {madrid.hour:02d}:{madrid.minute:02d} MADRID<br>
+        <span style="font-size:12px">{madrid.day:02d}/{madrid.month:02d}/{madrid.year}</span>
+    </div>
+    """
+    st.markdown(hora_html, unsafe_allow_html=True)
 st.divider()
 
 # CALENDARIO + PILARES
