@@ -7,16 +7,15 @@ import pytz
 st.set_page_config(page_title="KB VINULA TRADING", layout="wide")
 
 # CABECERA
-c1,c2,c3 = st.columns([1,2,1])
-with c1:
-    st.markdown("## KB VINULA")
-with c2:
-    st.markdown("<h1 style='text-align:center'>KB VINULA TRADING</h1>", unsafe_allow_html=True)
-with c3:
-    madrid = datetime.now(pytz.timezone('Europe/Madrid'))
-    fecha_txt = str(madrid.day) + "/" + str(madrid.month) + "/" + str(madrid.year) + " " + str(madrid.hour) + ":" + str(madrid.minute)
-    st.info(fecha_txt + " MADRID")
-
+col_logo, col_titulo = st.columns([1, 4])
+with col_logo:
+    try:
+        st.image("logo.png", width=135)
+    except:
+        st.markdown("## 👑 KB")
+with col_titulo:
+    st.markdown("## KB VIÑUELA TRADING")
+    st.caption("Diario 100% funcional + Escudo")
 st.divider()
 
 # CALENDARIO + PILARES
