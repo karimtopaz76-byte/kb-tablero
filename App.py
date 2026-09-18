@@ -79,9 +79,23 @@ with col_tv:
     st.markdown("*TV ECONOMIA 24H - FUNCIONA SIEMPRE*")
     components.html("""
     <div style="background:white; border:1px solid #ccc; border-radius:8px; overflow:hidden">
-    <iframe width="100%" height="450" src="https://www.youtube.com/embed/9Auq9mYxFEE?mute=1" title="Bloomberg Live" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <!-- BLOOMBERG LIVE por CANAL - nunca privado -->
+    <iframe width="100%" height="450" 
+    src="https://www.youtube.com/embed/live_stream?channel=UCIALMKvObZNtJ6AmdCLP7Lg" 
+    title="Bloomberg Live 24h" frameborder="0" 
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+    allowfullscreen>
+    </iframe>
     </div>
     """, height=470)
+    
+    st.markdown("Si Bloomberg no carga en tu pais, este segundo canal SIEMPRE funciona:")
+    components.html("""
+    <iframe width="100%" height="280" 
+    src="https://www.youtube.com/embed/live_stream?channel=UCknLrEdhRCp1aegoMqRaA_Q" 
+    title="Euronews Live" frameborder="0" allowfullscreen>
+    </iframe>
+    """, height=300)
 
 with col_dxy:
     st.markdown("*📉 DXY - DOLAR INDEX (ARREGLADO)*")
