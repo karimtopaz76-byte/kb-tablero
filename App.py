@@ -63,23 +63,11 @@ components.html("""<div style="background:#000; border:2px solid #FFD60A; border
 col_tv, col_dxy = st.columns([1.2, 1])
 
 with col_tv:
-    st.markdown("*TV ECONOMIA 24H*")
+    with col_tv:
+    st.markdown("*TV ECONOMIA 24H - NOTICIAS REALES*")
     components.html("""
-<div class="tradingview-widget-container">
-<script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-{
-"feedMode": "market",
-"market": "forex",
-"colorTheme": "light",
-"isTransparent": false,
-"displayMode": "regular",
-"width": "100%",
-"height": 550,
-"locale": "es"
-}
-</script>
-</div>
-""", height=570)
+    <iframe src="https://www.investing.com/news/forex-news" width="100%" height="550" style="border:1px solid #ccc; border-radius:8px; background:white"></iframe>
+    """, height=570)
 
 with col_dxy:
     st.markdown("*📉 DXY - DOLAR INDEX*")
