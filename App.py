@@ -7,8 +7,99 @@ import pytz
 st.set_page_config(page_title="KB VINULA TRADING", layout="wide")
 
 # CABECERA
- 
+ 3
+Chats
+13:15
+13:10
+Ayer
+Ayer
+miércoles
+miércoles
+miércoles
+lunes
+10/9/2026
+10/9/2026
+10/9/2026
+10/9/2026
+10/9/2026
+24/8/2026
+21/8/2026
+8/8/2026
+6/8/2026
+3/8/2026
+29/7/2026
+7/7/2026
+Hoy
+import streamlit as st
+import streamlit.components.v1 as components
+import pandas as pd
+from datetime import datetime
+import pytz
 
+st.set_page_config(page_title="KB VINULA TRADING", layout="wide", page_icon="👑")
+
+st.markdown("""
+<style>
+.stApp { background: #FFFFFF!important; }
+h1,h2,h3,h4,h5,h6,p,span,div,label { color: #000000!important; }
+.card { background: #F5F5F5; border: 1px solid #CCCCCC; border-radius: 12px; padding: 12px; }
+</style>
+""", unsafe_allow_html=True)
+
+c1,c2,c3 = st.columns([1,2,1])
+with c1:
+    try:
+        st.image("logo.png", width=130)
+    except:
+        st.markdown("## 👑 KB VINULA")
+with c2:
+    st.markdown("<h1 style='text-align:center; color:#000!important; margin:0'>KB VINULA TRADING</h1>", unsafe_allow_html=True)
+with c3:
+    … Leer más
+10:56
+from datetime import datetime
+import pytz
+from streamlit_autorefresh import st_autorefresh
+
+# Auto-actualiza cada 60 segundos
+st_autorefresh(interval=60 * 1000, key="reloj_madrid")
+
+# CSS dorado sobre negro como tu logo
+st.markdown("""
+<style>
+.hora-oro {
+    background-color: #000000;
+    color: #C9A86A;
+    border: 1.5px solid #C9A86A;
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    font-weight: 700;
+    font-family: serif;
+    letter-spacing: 1px;
+    box-shadow: 0 0 10px rgba(201,168,106,0.3);
+}
+</style>
+""", unsafe_allow_html=True)
+
+col_logo, col_titulo, col_hora = st.columns([1, 3, 1.3])
+
+with col_logo:
+    st.image("logo.png", width=140)
+
+with col_titulo:
+    st.markdown("## KB VIÑUELA TRADING")
+    st.caption("Diario 100% funcional + Escudo")
+
+with col_hora:
+    madrid = datetime.now(pytz.timezone('Europe/Madrid'))
+    hora_html = f"""
+    <div class="hora-oro">
+        {madrid.hour:02d}:{madrid.minute:02d} MADRID<br>
+        <span style="font-size:12px">{madrid.day:02d}/{madrid.month:02d}/{madrid.year}</span>
+    </div>
+    """
+    st.markdown(hora_html, unsafe_allow_html=True)
 st.divider()
 
 # CALENDARIO + PILARES
