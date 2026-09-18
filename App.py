@@ -42,7 +42,7 @@ with col_cal:
         components.html('<iframe src="https://sslecal2.forexprostools.com/?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=25,32,6,37,72,22,17,39,14,10,35,43,56,36,110,11,26,12,4,5&calType=week&timeZone=55&lang=12&importance=3" width="100%" height="650" frameborder="0"></iframe>', height=670)
 
 with col_pilar:
-    st.markdown("#### PILARES - HOY 18-09-2026")
+    st.markdown("#### fundamental - HOY 18-09-2026")
     with st.container(border=True):
         st.error("1 - IPC USA: 3.4% Agosto - NEUTRO-ALTO = Cuidado ORO")
         st.warning("3 - FED HOY: 3.75% - 4.00% - Subio ayer 17 Sep - Tasa SUBE = DXY SUBE / ORO BAJA CORTO")
