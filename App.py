@@ -1,67 +1,151 @@
 import streamlit as st
 from datetime import datetime
 import pytz
-import streamlit.components.v1 as components
-st.set_page_config(page_title="KB VINUELA TRADING", page_icon="👑", layout="wide")
-c1, c2, c3 = st.columns([1, 2.2, 1])
-with c1:
-    try:
-        st.image("logo.png", width=145)
-    except:
-        st.markdown("## 👑 KB")
-with c2:
-    st.markdown("## KB VIÑUELA TRADING")
-    st.caption("Diario 100% funcional + Escudo + 3 Estrellas")
-with c3:
-    components.html("""
-    <div id="reloj" style="background:#000;color:#C9A86A;border:1.5px solid #C9A86A;border-radius:10px;padding:12px;text-align:center;font-weight:800;font-family:serif;font-size:16px;"></div>
-    <script>
-    function tick(){
-        const h=new Date().toLocaleTimeString("es-ES",{timeZone:"Europe/Madrid",hour:'2-digit',minute:'2-digit',second:'2-digit'});
-        const d=new Date().toLocaleDateString("es-ES",{timeZone:"Europe/Madrid",day:'2-digit',month:'2-digit',year:'numeric'});
-        document.getElementById("reloj").innerHTML=h+" MADRID<br><span style='font-size:12px'>"+d+"</span>";
+
+# Configuración de la página
+st.set_page_config(page_title="KB VINUELA TRADING Premium", page_icon=":moneybag:", layout="wide")
+
+# Colores
+color_fondo = "#000000"
+color_dorado = "#C9A86A"
+color_texto = "#FFFFFF"
+
+# Aplicar estilo general
+st.markdown(
+    f"""
+    <style>
+    .main {{
+        background-color: {color_fondo};
+        color: {color_texto};
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }}
+    .stButton>button {{
+        background-color: {color_dorado};
+        color: {color_fondo};
+        font-weight: bold;
+    }}
+    .stTabs [data-baseweb="tab-list"] button {{
+        color: {color_dorado};
+        background-color: {color_fondo};
+        font-weight: bold;
+    }}
+    .stTabs [data-baseweb="tab-list"] button[aria-selected="true"] {{
+        border-bottom: 2px solid {color_dorado};
+        color: {color_dorado};
+    }}
+    .pillars {
+        font-size: 18px;
+        color: {color_dorado};
+        font-weight: bold;
+        padding: 10px 15px;
+        border: 2px solid {color_dorado};
+        border-radius: 12px;
+        margin-bottom: 10px;
+        max-width: 500px;
+        background-color: {color_fondo};
+    }}
+    form {
+        background-color: #111111;
+        padding: 15px;
+        border-radius: 15px;
+        border: 2px solid {color_dorado};
+        color: {color_dorado};
     }
-    setInterval(tick,1000);tick();
-    </script>
-    """, height=85)
-st.divider()
-tab1, tab2, tab3 = st.tabs(["PANEL HOY", "CALENDARIO 3 ESTRELLAS", "DIARIO"])
-with tab1:
-    madrid = datetime.now(pytz.timezone('Europe/Madrid'))
-    hoy = madrid.strftime("%d-%m-%Y")
-    colA, colB = st.columns(2)
-    with colA:
-        st.subheader(f"PILARES - {hoy}")
-        st.error("PILAR 1 IPC USA: 3.4% Agosto - NEUTRO-ALTO -> ORO cuidado")
-        st.warning("PILAR 3 FED: 3.75% - 4.00% (17 Sep) - DXY 99.67 FUERTE = ORO BAJA corto")
-        st.success("PILAR 2 NFP: >200k = DXY FUERTE / ORO VENTA | <150k = DXY DEBIL / ORO COMPRA")
-        st.info("ORO Soporte 2140 Resistencia 2185 | Killzone 08-11h y 14-17h Madrid")
-        with st.expander("ESTRATEGIA FUERTE +200k"):
-            st.write("Killzone 14-17h Madrid - Venta ORO 2175-2180 SL 2190 TP 2150/2140")
-        with st.expander("ESTRATEGIA CALMA"):
-            st.write("Rango 2140-2180 - No operar noticias directas")
-    with colB:
-        st.subheader("KILLZONES MADRID")
-        st.warning("08:00 - 11:00 LONDRES - Mejor para ORO")
-        st.error("14:00 - 17:00 NEW YORK - Mayor volatilidad")
-        st.success("EVITAR 12:00-13:30 Almuerzo NY")
-        st.subheader("CHECKLIST HOY")
-        st.checkbox("Calendario 3 estrellas revisado")
-        st.checkbox("DXY direccion clara")
-        st.checkbox("Killzone esperando")
-        st.checkbox("SL y TP definidos")
-with tab2:
-    st.subheader("Calendario Economico - Solo 3 Estrellas")
-    components.iframe("https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=25,32,6,37,72,22,17,39,14,10,35,43,56,36,110,11,26,12,4,5&calType=week&timeZone=95&lang=12", height=700, scrolling=True)
-with tab3:
-    st.subheader("Diario de Trading KB")
-    with st.form("diario"):
-        fecha = st.date_input("Fecha")
-        par = st.selectbox("Par", ["ORO / XAUUSD", "DXY", "EURUSD", "GBPUSD", "BTCUSD"])
-        direccion = st.radio("Direccion", ["COMPRA", "VENTA"])
-        resultado = st.selectbox("Resultado", ["En espera", "Ganada", "Perdida", "BE"])
-        notas = st.text_area("Notas de la operacion")
-        if st.form_submit_button("Guardar en Diario"):
-            st.success(f"Operacion {par} {direccion} guardada {fecha} - {resultado}")
-st.divider()
-st.caption("KB VINUELA TRADING 2026 - Negro y Dorado como tu escudo")
+    label, input, select, textarea {
+        color: {color_dorado};
+        background-color: {color_fondo};
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Función reloj vivo con actualización cada segundo
+def reloj_vivo():
+    tz_madrid = pytz.timezone('Europe/Madrid')
+    now = datetime.now(tz_madrid)
+    fecha_hora = now.strftime("%H:%M:%S")
+    # Reloj en negro y dorado con segundos que actualiza
+    st.markdown(
+        f"""
+        <div style="color: {color_dorado}; font-weight: bold; font-family: monospace; font-size: 24px; background-color: {color_fondo}; padding: 5px 15px; border-radius: 8px; border: 2px solid {color_dorado}; width: 130px; text-align: center;">
+            {fecha_hora}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    st.experimental_rerun()
+
+# Header con 3 columnas: logo izq, título centro, reloj der
+col1, col2, col3 = st.columns([1, 4, 2])
+
+with col1:
+    try:
+        st.image("logo.png", width=80)
+    except:
+        pass
+
+with col2:
+    st.markdown(f'<h1 style="color: {color_dorado}; text-align:center; font-family: serif;">KB VINUELA TRADING</h1>',
+                unsafe_allow_html=True)
+
+with col3:
+    # Mostrar reloj que actualiza cada segundo
+    # Aquí la forma sencilla con st.empty para actualizar sin rerun total
+    relojeria = st.empty()
+    import time
+    import threading
+
+    def mostrar_reloj():
+        while True:
+            now = datetime.now(pytz.timezone('Europe/Madrid'))
+            reloj_html = f"""
+                <div style="color: {color_dorado}; font-weight: bold; font-family: monospace; font-size: 24px; background-color: {color_fondo}; padding: 5px 15px; border-radius: 8px; border: 2px solid {color_dorado}; text-align: center;">
+                    {now.strftime('%H:%M:%S')}
+                </div>
+            """
+            relojeria.markdown(reloj_html, unsafe_allow_html=True)
+            time.sleep(1)
+
+    # Ejecutar reloj en hilo para que no bloquee la app
+    threading.Thread(target=mostrar_reloj, daemon=True).start()
+
+# Pestañas
+tabs = st.tabs(["PANEL HOY", "CALENDARIO", "DIARIO"])
+
+with tabs[0]:
+    st.markdown("<h2 style='color: #C9A86A;'>Pilares de Hoy</h2>", unsafe_allow_html=True)
+
+    pilares = [
+        "IPC 3.4%",
+        "FED 3.75-4%",
+        "DXY 99.67 FUERTE",
+        "NFP >200k",
+        "ORO VENTA",
+        "Killzones 08-11h Londres / 14-17h NY"
+    ]
+
+    for pilar in pilares:
+        st.markdown(f"<div class='pillars'>{pilar}</div>", unsafe_allow_html=True)
+
+with tabs[1]:
+    st.markdown("<h2 style='color: #C9A86A;'>Calendario Económico</h2>", unsafe_allow_html=True)
+    # iframe de investing.com inserta con timezone Madrid
+    # Ajustamos tamaño para que se vea bien
+    st.components.v1.html(
+        """
+        <iframe src="https://es.investing.com/economic-calendar/" width="100%" height="600px" frameborder="0"></iframe>
+        """,
+        height=600,
+        scrolling=True,
+    )
+
+with tabs[2]:
+    st.markdown("<h2 style='color: #C9A86A;'>Diario de Trading</h2>", unsafe_allow_html=True)
+    with st.form(key='diario_form'):
+        par = st.text_input("Par (ejemplo: EUR/USD):")
+        direccion = st.selectbox("Dirección", ["Compra", "Venta"])
+        resultado = st.text_input("Resultado (pips, USD, etc.):")
+        enviar = st.form_submit_button("Guardar")
+        if enviar:
+            st.success(f"Registro guardado:\nPar: {par}, Dirección: {direccion}, Resultado: {resultado}")
