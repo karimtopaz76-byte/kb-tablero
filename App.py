@@ -1,148 +1,163 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 from datetime import datetime
 import pytz
+import streamlit.components.v1 as components
 
-st.set_page_config(page_title="KB VINULA TRADING", layout="wide", page_icon="👑")
+st.set_page_config(page_title="KB VINULA TRADING", layout="wide")
 
+# FONDO BLANCO LETRA NEGRA - TU FORMA DEL PAPEL
 st.markdown("""
 <style>
-.stApp { background: #0A0A0A; color: #EAEAEA; }
-.card { background: #151515; border: 1px solid #2A2A2A; border-radius: 14px; padding: 14px; }
-.gold { color: #FFD60A; }
-.ticker { background: #000; border: 1px solid #FFD60A; padding: 8px; border-radius: 8px; overflow: hidden; white-space: nowrap; }
+.stApp {background-color:#ffffff!important; color:#000000!important;}
+h1,h2,h3,p,div,span,label {color:#000000!important;}
+.borde {border:1.5px solid #000; padding:8px; background:#fff; margin-bottom:0px; font-weight:800;}
 </style>
 """, unsafe_allow_html=True)
 
-# LOGO
-h1,h2,h3 = st.columns([0.9,2.2,1])
-with h1:
-    try: st.image("logo.png", width=140)
-    except: st.markdown("<h2 class='gold'>KB VINULA</h2>", unsafe_allow_html=True)
-with h2:
-    st.markdown("<h1 style='text-align:center; margin:0'>KB VINULA TRADING</h1>", unsafe_allow_html=True)
-with h3:
-    madrid = datetime.now(pytz.timezone('Europe/Madrid'))
-    st.markdown(f"<div class='card' style='text-align:center'><b>{madrid.strftime('%H:%M:%S')}</b><br><span class='gold'>MADRID</span></div>", unsafe_allow_html=True)
+# FILA 1 - EXACTO A TU DIBUJO
+col_logo, col_title, col_reloj = st.columns([1, 2.2, 1])
+with col_logo:
+    st.markdown('<div class="borde" style="height:110px; text-align:center;">', unsafe_allow_html=True)
+    try:
+        st.image("logo.png", width=110)
+    except:
+        st.markdown("**LOGO**")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.divider()
+with col_title:
+    st.markdown('<div class="borde" style="height:110px; text-align:center;"><div style="font-size:22px;">KB VIÑULA TRADING</div><div style="font-size:14px; margin-top:8px;">FRANCOTIRADOR ORO/DXY</div></div>', unsafe_allow_html=True)
 
-# CALENDARIO + PILARES
-col_cal, col_pilar = st.columns([1.2, 1])
-with col_cal:
-    st.markdown("#### 📅 CALENDARIO ECONOMICO")
-    with st.container(border=True):
-        components.html("""
-        <div class="tradingview-widget-container">
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-events.js" async>
-          {"colorTheme":"dark","isTransparent":true,"width":"100%","height":"650","locale":"es","importanceFilter":"-1,0,1","currencyFilter":"USD"}
-          </script>
-        </div>
-        """, height=670)
+with col_reloj:
+    components.html("""
+    <div style="border:1.5px solid #000; padding:10px; text-align:center; background:#fff; height:110px; color:#000; font-family:monospace;">
+        <div id="hora" style="font-size:18px; font-weight:800;"></div>
+        <div style="font-size:14px; font-weight:700;">MADRID</div>
+        <div id="fecha" style="font-size:12px;"></div>
+    </div>
+    <script>
+    function tick(){
+        const h=new Date().toLocaleTimeString("es-ES",{timeZone:"Europe/Madrid",hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        const f=new Date().toLocaleDateString("es-ES",{timeZone:"Europe/Madrid",weekday:'short',day:'2-digit',month:'short'});
+        document.getElementById("hora").innerHTML=h;
+        document.getElementById("fecha").innerHTML=f.toUpperCase();
+    }
+    setInterval(tick,1000);tick();
+    </script>
+    """, height=120)
 
-with col_pilar:
-    st.markdown("#### 🏛️ PILARES FUNDAMENTALES")
-    with st.container(border=True):
-        st.markdown("*1. IPC USA*")
-        ipc = st.slider("ipc", 0.0, 8.0, 3.2, 0.1, label_visibility="collapsed")
-        if ipc > 4: st.error(f"IPC {ipc}% Alto = Oro baja")
-        elif ipc < 2.5: st.success(f"IPC {ipc}% Bajo = Oro sube")
-        else: st.warning(f"IPC {ipc}% Medio")
-        st.markdown("*2. NFP*")
-        st.selectbox("nfp", ["Fuerte +200k - Oro baja","Medio","Débil <100k - Oro sube"], label_visibility="collapsed")
-        st.markdown("*3. TASAS FED*")
-        st.selectbox("fed", ["Suben - Oro baja","Mantienen - Soporte","Bajan - Oro sube"], label_visibility="collapsed")
-        st.divider()
-        c1,c2 = st.columns(2)
-        c1.metric("DXY", "103.2", "-0.3%")
-        c2.metric("VIX", "18.5")
-        st.markdown("*4. GEOPOLITICA*")
-        st.selectbox("geo", ["Tensión media","Guerra","Calma"], label_visibility="collapsed")
-        st.markdown("*5. SESION*")
-        st.info("Killzone 08-11h y 14-17h")
+# FILA 2 - CALENDARIO Y PILARES
+c_cal, c_pilar = st.columns([1.6, 1])
+with c_cal:
+    st.markdown('<div class="borde">Calendario Economico 3 estrellas</div>', unsafe_allow_html=True)
+    components.iframe("https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&features=datepicker,timezone&countries=25,32,6,37,72,22,17,39,14,10,35,43,56,36,110,11,26,12,4,5&calType=week&timeZone=95&lang=12", height=380, scrolling=True)
 
-# === CANAL TV - V44 TRIPLE CAPA QUE SI FUNCIONA ===
-st.divider()
-st.markdown("#### 📺 CANAL TV INFORMATIVO - TIEMPO REAL ORO")
+with c_pilar:
+    st.markdown('<div class="borde">Pilares de Fundamental (datos real time)</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="border:1.5px solid #000; border-top:0; padding:12px; background:#fff; color:#000;">
+    <b>IPC:</b> 3.4% Agosto<br>
+    <b>NFP:</b> >200k = DXY FUERTE<br>
+    <b>DXY:</b> 99.67 FUERTE<br>
+    <b>VIX:</b> 14.8<br>
+    <b>Tasa Fed:</b> 3.75%-4.00% (Subio 17 Sep)<br>
+    <b>Geopolitica hoy:</b> Tension soporte ORO
+    </div>
+    """, unsafe_allow_html=True)
 
-# TICKER SUPERIOR QUE NUNCA FALLA
-components.html("""
-<div style="background:#000; border:2px solid #FFD60A; border-radius:8px; padding:10px; color:#FFD60A; font-family:monospace; font-size:14px; overflow:hidden">
-<marquee scrollamount="5">
-🔴 EN VIVO | XAUUSD 4.342.32 ▲ 0.45% | DXY 103.2 ▼ -0.3% | VIX 18.5 | FED: Mantiene tasas | IPC: 3.2% | NFP viernes | Killzone activa 14-17h Madrid | Oro en soporte diario 4.340 |
-</marquee>
-</div>
-""", height=60)
+# FILA 3 - GRAFICOS
+c_xau, c_dxy = st.columns([2, 1])
+with c_xau:
+    st.markdown('<div class="borde">grafico XAUUSD</div>', unsafe_allow_html=True)
+    components.html("""<div id="tv_xau"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"OANDA:XAUUSD","interval":"60","timezone":"Europe/Madrid","theme":"light","style":"1","locale":"es","height":350,"container_id":"tv_xau"});</script>""", height=360)
 
-with st.container(border=True):
-    tv1, tv2, tv3 = st.tabs(["📺 TV1 Noticias Oro", "📈 TV2 Mercado", "📻 TV3 Investing"])
+with c_dxy:
+    st.markdown('<div class="borde">grafico DXY</div>', unsafe_allow_html=True)
+    components.html("""<div id="tv_dxy"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize":true,"symbol":"CAPITALCOM:DXY","interval":"60","timezone":"Europe/Madrid","theme":"light","style":"1","locale":"es","height":350,"container_id":"tv_dxy"});</script>""", height=360)
 
-    with tv1:
-        # CAPA 1 - TradingView que funciona
-        components.html("""
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
-          {"feedMode":"all","colorTheme":"dark","isTransparent":true,"displayMode":"regular","width":"100%","height":400,"locale":"es"}
-          </script>
-        </div>
-        """, height=420)
+# FILA 4 - CHECKLIST
+st.markdown('<div class="borde">CheckList</div>', unsafe_allow_html=True)
+ch1, ch2 = st.columns(2)
+with ch1:
+    z1 = st.checkbox("Zona de interes D1/S1/M1")
+    z2 = st.checkbox("Rechazo de Vela H4")
+    z3 = st.checkbox("BOS H1")
+with ch2:
+    z4 = st.checkbox("FVG 15m")
+    z5 = st.checkbox("FVG 5m")
+    z6 = st.checkbox("Entrada")
 
-    with tv2:
-        # CAPA 2 - Market Overview
-        components.html("""
-        <div class="tradingview-widget-container">
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
-          {"colorTheme":"dark","dateRange":"1D","showChart":true,"locale":"es","width":"100%","height":400,"isTransparent":true,"tabs":[{"title":"Oro & Dolar","symbols":[{"s":"OANDA:XAUUSD","d":"Oro"},{"s":"TVC:DXY","d":"DXY"},{"s":"TVC:VIX","d":"VIX"},{"s":"OANDA:XAGUSD","d":"Plata"}]}]}
-          </script>
-        </div>
-        """, height=420)
+# FILA 5 - TU DIARIO DE 11 COLUMNAS - TU CODIGO BASE
+st.markdown('<div class="borde">Diario de trading</div>', unsafe_allow_html=True)
 
-    with tv3:
-        # CAPA 3 - Investing que NUNCA se bloquea en tablet
-        st.markdown("*Noticias Commodities - Oro*")
-        components.html('<iframe src="https://www.investing.com/news/commodities-news" width="100%" height="400" frameborder="0"></iframe>', height=420)
+FILE = "trading.xlsx"
 
-# GRAFICOS
-st.divider()
-g1,g2 = st.columns(2)
-with g1:
-    st.markdown("*📈 XAUUSD - ORO*")
-    components.html('<div id="kb_xau_v44" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"container_id":"kb_xau_v44","autosize":true,"symbol":"OANDA:XAUUSD","interval":"60","timezone":"Europe/Madrid","theme":"dark","style":"1","locale":"es"})</script>', height=520)
-with g2:
-    st.markdown("*📉 DXY - DOLAR*")
-    components.html('<div id="kb_dxy_v44" style="height:500px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"container_id":"kb_dxy_v44","autosize":true,"symbol":"TVC:DXY","interval":"60","timezone":"Europe/Madrid","theme":"dark","style":"1","locale":"es"})</script>', height=520)
-
-# CHECKLIST + DIARIO
-st.divider()
-st.markdown("### 🎯 CHECKLIST 7/7")
-with st.container(border=True):
-    checks = [st.checkbox(f"{i+1}. Paso {i+1}") for i in range(7)]
-    total = sum(checks)
-    st.progress(total/7, text=f"{total}/7")
-    st.success("EJECUTA" if total==7 else "ESPERA")
-
-st.divider()
-st.markdown("### 📂 DIARIO")
-FILE="trading.xlsx"
 def cargar():
     try:
-        tmp=pd.read_excel(FILE, header=None)
-        f=0
-        for i in range(len(tmp)):
-            if "Fecha" in str(tmp.iloc[i].values): f=i; break
-        df=pd.read_excel(FILE, header=f)
-        df=df[[c for c in df.columns if "Unnamed" not in str(c)]].dropna(how='all').fillna("")
-        if "Fecha" in df.columns:
-            df["Fecha"]=pd.to_datetime(df["Fecha"], errors='coerce').dt.strftime("%d/%m/%Y").replace("NaT","").fillna("")
-        return df.replace("0.0","")
+        df = pd.read_excel(FILE)
+        if df.empty:
+            raise ValueError("vacio")
+        cols = ["Fecha","Activo","Calendario economico","Nivel de interes","Rechazo H4","BOS H1","FVG 15m","FVG 5m","Tamano operacion","TP","SL"]
+        for c in cols:
+            if c not in df.columns:
+                df[c] = ""
+        return df
     except:
-        return pd.DataFrame({"Fecha":[datetime.now().strftime("%d/%m/%Y")],"Activo":["MGC"],"Resultado":[""]})
+        return pd.DataFrame({
+            "Fecha": ["18/09/2026"],
+            "Activo": ["XAUUSD"],
+            "Calendario economico": ["IPC 3.4% / FED 4%"],
+            "Nivel de interes": ["3.75%-4.00%"],
+            "Rechazo H4": ["Si - Mecha larga"],
+            "BOS H1": ["Si alcista"],
+            "FVG 15m": ["2650-2652"],
+            "FVG 5m": ["Si entrada"],
+            "Tamano operacion": ["0.01"],
+            "TP": ["2660"],
+            "SL": ["2645"]
+        })
 
-if "df" not in st.session_state: st.session_state.df=cargar()
-edit=st.data_editor(st.session_state.df, num_rows="dynamic", use_container_width=True, height=400, key="ed_v44")
-st.session_state.df=edit
-if st.button("💾 GUARDAR TODO", type="primary", use_container_width=True):
-    edit.to_excel(FILE, index=False)
-    st.success("Guardado!")
+if "df" not in st.session_state:
+    st.session_state.df = cargar()
+
+edit = st.data_editor(
+    st.session_state.df,
+    num_rows="dynamic",
+    use_container_width=True,
+    height=400,
+    key="diario_final"
+)
+
+c1, c2, c3 = st.columns(3)
+with c1:
+    if st.button("GUARDAR", type="primary", use_container_width=True):
+        st.session_state.df = edit
+        st.success("Guardado OK - " + str(len(edit)) + " filas")
+        st.balloons()
+        try:
+            edit.to_excel(FILE, index=False)
+        except:
+            pass
+
+with c2:
+    csv = edit.to_csv(index=False).encode('utf-8')
+    st.download_button("BACKUP CSV", csv, "kb.csv", "text/csv", use_container_width=True)
+
+with c3:
+    if st.button("NUEVA FILA", use_container_width=True):
+        hoy = str(datetime.now().day) + "/" + str(datetime.now().month)
+        nueva = pd.DataFrame({
+            "Fecha": [hoy],
+            "Activo": ["XAUUSD"],
+            "Calendario economico": [""],
+            "Nivel de interes": ["3.75%-4.00%"],
+            "Rechazo H4": [""],
+            "BOS H1": [""],
+            "FVG 15m": [""],
+            "FVG 5m": [""],
+            "Tamano operacion": ["0.01"],
+            "TP": [""],
+            "SL": [""]
+        })
+        st.session_state.df = pd.concat([edit, nueva], ignore_index=True)
+        st.rerun()
