@@ -1,116 +1,94 @@
 import streamlit as st
+import requests
 
-st.set_page_config(page_title="ORO TOTAL - 6 Módulos", layout="wide")
-st.title("🟡 ORO TOTAL - Sistema Completo 6 Módulos")
-st.caption("Todo lo que mueve el oro en una sola hoja - 20 Sep 2026")
+st.set_page_config(page_title="ORO TOTAL v57 - Live + Alertas", layout="wide")
+st.title("🟡 ORO TOTAL v57 - Live + Telegram")
+st.caption("Datos en vivo + Alertas automáticas")
 
-# === DATOS REALES DE HOY (Base para API después) ===
-oro = 4378
-us02y = 4.74
-us10y = 4.78
-dxy = 103.5
-tips = 2.15
-brent = 104.5
-vix = 18.2
-btc = 67500
-plata = 31.2
-cobre = 4.35
+# === FUNCION DATOS EN VIVO QUE NO FALLA ===
+def get_live(ticker):
+    try:
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?interval=1d&range=2d"
+        r = requests.get(url, headers={"User-Agent":"Mozilla/5.0"}, timeout=5).json()
+        close = r['chart']['result'][0]['indicators']['quote'][0]['close']
+        last = close[-1]
+        prev = close[-2] if len(close)>1 and close[-2] else last
+        chg = ((last-prev)/prev)*100 if prev else 0
+        return round(last,2), round(chg,2)
+    except:
+        return None, 0
 
-# === MODULO 1: DINERO REAL ===
-st.header("1. 💵 DINERO REAL - 70% del movimiento")
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("US02Y", f"{us02y}%", "↑ Peligro ventas")
-c2.metric("US10Y", f"{us10y}%", "Cerca 4.80%")
-c3.metric("DXY", f"{dxy}", "↑ Fuerte")
-c4.metric("TIPS Real", f"{tips}%", "Si >2.2% = caída")
-if us02y > 4.7 and dxy > 103:
-    st.error("🔴 CONCLUSIÓN M1: Dinero CARO = SOLO VENTAS ORO")
+# === TRAE DATOS ===
+us02y, c1 = get_live("^IRX")
+us10y, c2 = get_live("^TNX")
+dxy, c3 = get_live("DX-Y.NYB")
+vix, c4 = get_live("^VIX")
+brent, c5 = get_live("BZ=F")
+oro, c6 = get_live("GC=F")
+btc, c7 = get_live("BTC-USD")
+
+# Si falla API, usa datos de respaldo de hoy
+if us02y is None:
+    us02y, us10y, dxy, vix, brent, oro, btc = 4.74, 4.78, 103.5, 18.2, 104.5, 4378, 67500
+    st.warning("Usando datos de respaldo - API Yahoo lenta, se actualizará solo")
 else:
-    st.success("🟢 Dinero barato = Compras")
+    # Convertir yields: ^IRX y ^TNX vienen x10
+    us02y = us02y/1 if us02y < 10 else us02y/10  # Ajuste según formato
+    us10y = us10y/1 if us10y < 10 else us10y/10
+    st.success(f"✅ Datos en vivo: Oro ${oro} - Brent ${brent}")
 
-st.divider()
+# === MUESTRA MÓDULOS ===
+st.header("1. DINERO REAL - LIVE")
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("US02Y", f"{us02y}%", f"{c1}%")
+col2.metric("US10Y", f"{us10y}%", f"{c2}%")
+col3.metric("DXY", f"{dxy}", f"{c3}%")
+col4.metric("VIX", f"{vix}", f"{c4}%")
 
-# === MODULO 2: MIEDO ===
-st.header("2. 😱 MIEDO - 20% del movimiento")
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("VIX", f"{vix}", "Miedo bajo")
-c2.metric("BRENT", f"${brent}", "↑ Alto - Riesgo inflación")
-c3.metric("Gas TTF", "€38", "↑ Europa")
-c4.metric("Ormuz", "12% barcos lentos", "🟡 Alerta media")
-st.warning(f"Brent ${brent} alto = FED no baja tasas = Oro no puede subir mucho ahora")
-
-st.divider()
-
-# === MODULO 3: DEMANDA REAL ===
-st.header("3. 🏦 DEMANDA REAL - Pone el suelo")
+st.header("2. MATERIAS + ORO")
 c1, c2, c3 = st.columns(3)
-c1.metric("Bancos Centrales", "China +35T Sep", "Suelo fuerte")
-c2.metric("ETF GLD Flujo", "+1.2B esta semana", "Entrada dinero")
-c3.metric("COT - Grandes", "65% largos", "Todavía no extremo")
-st.info("🟢 Demanda física sigue comprando caídas. Suelo en $4320-$4335")
+c1.metric("ORO FUTURO", f"${oro}", f"{c6}%")
+c2.metric("BRENT", f"${brent}", f"{c5}%")
+c3.metric("BTC", f"${btc}", f"{c7}%")
 
+# === MODULO ALERTAS TELEGRAM ===
 st.divider()
+st.header("3. 🔔 ALERTAS TELEGRAM")
 
-# === MODULO 4: CORRELACIONES ===
-st.header("4. 🔗 CORRELACIONES EN VIVO")
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Oro vs BTC", f"Oro ${oro} / BTC ${btc}", "Descorrelacionado")
-c2.metric("Ratio Oro/Plata", f"{oro/plata:.1f}", "Si baja <75 = Plata explota")
-c3.metric("Oro vs Cobre", f"Cobre ${cobre}", "Economía aguantando")
-c4.metric("Oro vs SPX", "Oro más fuerte", "Refugio activo")
-ratio = oro/plata
-if ratio > 85:
-    st.caption(f"Ratio {ratio:.1f} alto = Plata barata vs oro")
+st.write("Configura tu bot una sola vez:")
+token = st.text_input("BOT TOKEN (de @BotFather)", type="password")
+chat_id = st.text_input("CHAT ID (de @userinfobot)")
 
-st.divider()
+def send_telegram(msg):
+    try:
+        url = f"https://api.telegram.org/bot{token}/sendMessage"
+        requests.post(url, data={"chat_id": chat_id, "text": msg}, timeout=5)
+        return True
+    except:
+        return False
 
-# === MODULO 5: CALENDARIO ===
-st.header("5. 📅 CALENDARIO QUE IMPORTA - Solo 5 eventos")
-st.table({
-    "Evento": ["CPI USA", "NFP Empleo", "FOMC FED", "PCE Inflación", "Ventas Minoristas"],
-    "Fecha": ["11 Oct", "3 Oct", "30 Oct", "25 Oct", "17 Oct"],
-    "Impacto Oro": ["★★★★★", "★★★★★", "★★★★★", "★★★★", "★★★"],
-    "Acción": ["NO OPERAR 1h antes", "NO OPERAR 1h antes", "NO OPERAR", "Cuidado", "Operable"]
-})
-st.error("🔴 Hoy: Sin eventos mayores. Día técnico - perfecto para rangos.")
+# Lógica de alerta automática
+alerta = ""
+if isinstance(brent, (int,float)) and brent > 110:
+    alerta = f"🚨 BRENT ROMPIÓ $110 - Actual ${brent} - Oro puede ir a $4500 por miedo"
+if isinstance(us02y, (int,float)) and us02y > 4.80:
+    alerta = f"🚨 US02Y > 4.80% - Actual {us02y}% - PELIGRO ventas oro"
 
-st.divider()
+if alerta and token and chat_id:
+    if st.button("Enviar alerta ahora a Telegram"):
+        if send_telegram(alerta):
+            st.success("Alerta enviada!")
+        else:
+            st.error("Error token/chat_id")
+    # Auto-envío
+    if 'ultima_alerta' not in st.session_state or st.session_state.ultima_alerta != alerta:
+        send_telegram(alerta + f"\nOro ${oro}")
+        st.session_state.ultima_alerta = alerta
+        st.toast(alerta)
 
-# === MODULO 6: CALCULADORA ===
-st.header("6. 🧮 CALCULADORA DE ESCENARIOS")
-st.write("¿Qué pasa si...?")
+if alerta:
+    st.error(alerta)
+else:
+    st.info(f"Todo en rango - Oro ${oro} - Sin alertas críticas")
 
-escenario = st.selectbox("Elige escenario:", [
-    "US02Y sube a 4.90% (FED dura)",
-    "Brent rompe $110",
-    "US02Y baja a 4.40% (FED recorta)",
-    "Guerra Ormuz - cierre parcial",
-    "VIX salta a 30"
-])
-
-if "4.90%" in escenario:
-    st.error("→ Oro cae a $4250 - $4280 (Venta fuerte)")
-elif "110" in escenario:
-    st.warning("→ Oro sube a $4450 - $4500 primero, luego cae por FED")
-elif "4.40%" in escenario:
-    st.success("→ Oro explota a $4550 - $4600 (Compra)")
-elif "Ormuz" in escenario:
-    st.success("→ Oro a $4700+ rápido (Compra refugio)")
-elif "30" in escenario:
-    st.success("→ Oro sube a $4520 por miedo")
-
-st.divider()
-st.header("🎯 VEREDICTO FINAL HOY 20 SEP")
-st.markdown(f"""
-**Oro ${oro} - Rango del día: $4335 - $4410**
-
-- Módulo 1 Dinero: 🔴 Venta (US02Y {us02y}%)
-- Módulo 2 Miedo: 🟡 Mixto (Brent alto)
-- Módulo 3 Demanda: 🟢 Compra (Suelo fuerte)
-- Módulo 4 Correlación: 🟡 Neutro
-- Módulo 5 Calendario: 🟢 Sin noticias = se puede operar
-
-**Plan: Solo ventas en $4395-$4410 con stop $4435, objetivo $4340**
-""")
-
-# === requirements.txt debe ser solo: streamlit ===
+st.caption("v57 - Próximo: Módulo 3,4,5,6 con datos live también")
