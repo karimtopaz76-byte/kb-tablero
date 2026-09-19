@@ -47,36 +47,7 @@ with col_pilar:
         st.error("1 - IPC USA: 3.4% Agosto - NEUTRO-ALTO = Cuidado ORO")
         st.warning("3 - FED HOY: 3.75% - 4.00% - Subio ayer 17 Sep - Tasa SUBE = DXY SUBE / ORO BAJA CORTO")
         st.selectbox("NFP", ["Fuerte +200k - Oro baja","Medio","Debil <100k - Oro sube"], label_visibility="collapsed")
-        st.selectbox # === GEO AUTOMÁTICO v56 ===
-
-def get_geo_status():
-    try:
-        # Simulamos con valores reales de hoy - luego lo conectas a API
-        us02y = 4.74  # TVC:US02Y
-        brent = 104.5 # TVC:UKOIL
-        vix = 21.5
-        
-        if brent > 108 or us02y > 4.85:
-            return "🔴 GUERRA / ORMUZ CERRADO - Oro explota >$4500", "error"
-        elif brent > 100 or us02y > 4.70:
-            return f"🟡 TENSIÓN MEDIA - Brent ${brent} + US02Y {us02y}% - Oro rango $4335-4400", "warning"
-        else:
-            return f"🟢 CALMA - Brent ${brent} + US02Y {us02y}% - Oro cae si US02Y sube", "success"
-    except:
-        return "🟡 TENSIÓN MEDIA - Sin datos", "warning"
-
-geo_text, geo_type = get_geo_status()
-
-if geo_type == "error":
-    st.error(geo_text)
-elif geo_type == "warning":
-    st.warning(geo_text)
-else:
-    st.success(geo_text)
-
-st.caption(f"US02Y: 4.74% | Brent: 104.5$ | Oro: 4378$ | 19 Sep 2026")
-        st.info("Killzone 08-11h y 14-17h Madrid - DXY 99.67 fuerte")
-
+    
 st.divider()
 
 # DXY + NOTICIAS
