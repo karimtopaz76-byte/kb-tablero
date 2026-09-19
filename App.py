@@ -1,5 +1,8 @@
 import streamlit as st
-import requests
+from datetime import datetime
+import pytz
+import pandas as pd
+import streamlit.components.v1 as components
 
 st.set_page_config(page_title="ORO TOTAL v57 COMPLETA", layout="wide")
 st.title("🟡 ORO TOTAL - Sistema Completo 6 Módulos v57")
