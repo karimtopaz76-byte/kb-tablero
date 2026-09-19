@@ -69,7 +69,8 @@ with col_dxy:
 
 with col_us02y:
     components.html('<div id="us02y" style="height:450px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize": true, "symbol": "TVC:US02Y", "interval": "60", "theme": "dark", "container_id": "us02y"})</script>', height=450)
-
+st.markdown("#### XAUUSD vs US02Y - Oro no sube si US02Y sube")
+components.html('<div id="xau" style="height:550px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize": true, "symbol": "OANDA:XAUUSD", "interval": "60", "theme": "dark", "container_id": "xau"})</script>', height=550)
     
 
 st.divider()
