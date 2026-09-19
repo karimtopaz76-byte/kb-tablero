@@ -141,3 +141,32 @@ with st.expander("Configurar Telegram (una sola vez)"):
                 st.error("Revisa token/chat_id")
 
 st.markdown(f"### Plan HOY - Oro ${oro} | Rango ${oro-43:.0f} - ${oro+22:.0f}")
+# --- MAPA DE CALOR FOREX + CRYPTO ---
+st.markdown("---")
+st.markdown('<div class="bloque">MAPA DE CALOR - FUERZA DEL MERCADO</div>', unsafe_allow_html=True)
+
+components.html("""
+<div class="tradingview-widget-container">
+  <div class="tradingview-widget-container__widget"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-forex-heat-map.js" async>
+  {
+  "width": "100%",
+  "height": 400,
+  "currencies": [
+    "EUR",
+    "USD",
+    "JPY",
+    "GBP",
+    "CHF",
+    "AUD",
+    "CAD",
+    "NZD",
+    "XAU"
+  ],
+  "isTransparent": true,
+  "colorTheme": "light",
+  "locale": "es"
+}
+  </script>
+</div>
+""", height=420)
