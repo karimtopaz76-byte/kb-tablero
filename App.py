@@ -63,7 +63,7 @@ with col_tv:
         st.link_button("FED RATE DECISION", "https://www.investing.com/economic-calendar/interest-rate-decision-168", use_container_width=True)
         st.link_button("FOREX NEWS", "https://www.investing.com/news/forex-news", use_container_width=True)
 with col_dxy:
-    components.html('<div id="dxy" style="height:450px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"container_id":"dxy","width":"100%","height":450,"symbol":"TVC:DXY","interval":"60","timezone":"Europe/Madrid","theme":"light","style":"1","locale":"es"});</script>', height=470)
+    components.html('<div id="dxy" style="height:450px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"container_id":"uso2y","width":"100%","height":450,"symbol":"TVC:DXY","interval":"60","timezone":"Europe/Madrid","theme":"light","style":"1","locale":"es"});</script>', height=470)
 
 st.divider()
 st.markdown("#### XAUUSD")
