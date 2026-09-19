@@ -173,3 +173,16 @@ components.html("""
   </script>
 </div>
 """, height=420)
+# --- ALERTA KB XAU FUERTE ---
+if st.session_state.get('bitacora'): # truco para que no falle
+    pass
+
+# Simulación de lectura del mapa (luego lo conectamos a API real)
+xau_fuerza = 0.85 # hoy +0.85% vs USD de tu captura
+
+if xau_fuerza >= 0.80:
+    st.markdown(f'<div class="caja-ok">🔥 ORO MUY FUERTE HOY +{xau_fuerza}% vs USD - BUSCA LONGS</div>', unsafe_allow_html=True)
+elif xau_fuerza <= -0.80:
+    st.markdown(f'<div class="caja-no">🔻 ORO MUY DÉBIL HOY {xau_fuerza}% vs USD - NO BUSQUES LONGS</div>', unsafe_allow_html=True)
+else:
+    st.markdown(f'<div class="caja-espera">Oro lateral hoy +{xau_fuerza}% - Espera ruptura</div>', unsafe_allow_html=True)
