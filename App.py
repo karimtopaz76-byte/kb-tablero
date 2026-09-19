@@ -48,7 +48,6 @@ with col_pilar:
         st.warning("3 - FED HOY: 3.75% - 4.00% - Subio ayer 17 Sep - Tasa SUBE = DXY SUBE / ORO BAJA CORTO")
         st.selectbox("NFP", ["Fuerte +200k - Oro baja","Medio","Debil <100k - Oro sube"], label_visibility="collapsed")
         st.selectbox # === GEO AUTOMÁTICO v56 ===
-import requests
 
 def get_geo_status():
     try:
