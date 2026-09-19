@@ -55,21 +55,22 @@ st.divider()
 # DXY + NOTICIAS
 st.markdown("#### NOTICIAS + DXY")
 components.html('<div style="background:#000; border:2px solid #FFD60A; border-radius:8px; padding:10px; color:#FFD60A; font-family:monospace"><marquee scrollamount="7">FED 3.75-4.00% | IPC 3.4% | DXY 99.67 FUERTE = ORO PRESIONADO | KILLZONE 14-17h</marquee></div>', height=60)
-
 col_tv, col_dxy, col_us02y = st.columns([1,1,1])
+
 with col_tv:
     with st.container(border=True):
         st.link_button("IPC USA DETALLE", "https://www.investing.com/economic-calendar/cpi-733", use_container_width=True)
         st.link_button("FED RATE DECISION", "https://www.investing.com/economic-calendar/interest-rate-decision-168", use_container_width=True)
         st.link_button("FOREX NEWS", "https://www.investing.com/news/forex-news", use_container_width=True)
-        st.link_button("us02y YIED","https://www.investing.com/rates/united-states-2-year-bond-yield", use_container_width=true)
-with col_dxy:
-    with col_us02y:
-    components.html('<div id="us02y" style="height:450px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize": true, "symbol": "TVC:US02Y", "interval": "60", "theme": "dark", "container_id": "us02y"})</script>', height=450).html('<div id="dxy" style="height:450px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"container_id":"dxy","width":"100%","height":450,"symbol":"TVC:DXY","interval":"60","timezone":"Europe/Madrid","theme":"light","style":"1","locale":"es"});</script>', height=470)
+        st.link_button("US02Y YIELD", "https://www.investing.com/rates/united-states-2-year-bond-yield", use_container_width=True)
 
-st.divider()
-st.markdown("#### XAUUSD")
-components.html('<div id="xau" style="height:550px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"container_id":"xau","width":"100%","height":550,"symbol":"OANDA:XAUUSD","interval":"15","timezone":"Europe/Madrid","theme":"light","style":"1","locale":"es"});</script>', height=570)
+with col_dxy:
+    components.html('<div id="dxy" style="height:450px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize": true, "symbol": "TVC:DXY", "interval": "60", "theme": "dark", "container_id": "dxy"})</script>', height=450)
+
+with col_us02y:
+    components.html('<div id="us02y" style="height:450px"></div><script src="https://s3.tradingview.com/tv.js"></script><script>new TradingView.widget({"autosize": true, "symbol": "TVC:US02Y", "interval": "60", "theme": "dark", "container_id": "us02y"})</script>', height=450)
+
+    
 
 st.divider()
 st.markdown("### CHECKLIST 7/7")
