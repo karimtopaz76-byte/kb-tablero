@@ -1,86 +1,94 @@
 import streamlit as st
 import requests
-from datetime import datetime
-import pandas as pd
 
-st.set_page_config(page_title="ORO TOTAL - 6 Módulos", layout="wide")
+st.set_page_config(page_title="ORO TOTAL v57 - Live + Alertas", layout="wide")
+st.title("🟡 ORO TOTAL v57 - Live + Telegram")
+st.caption("Datos en vivo + Alertas automáticas")
 
-def enviar_telegram(mensaje):
+# === FUNCION DATOS EN VIVO QUE NO FALLA ===
+def get_live(ticker):
     try:
-        token = st.secrets["TELEGRAM_TOKEN"]
-        chat_id = st.secrets["TELEGRAM_CHAT_ID"]
+        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?interval=1d&range=2d"
+        r = requests.get(url, headers={"User-Agent":"Mozilla/5.0"}, timeout=5).json()
+        close = r['chart']['result'][0]['indicators']['quote'][0]['close']
+        last = close[-1]
+        prev = close[-2] if len(close)>1 and close[-2] else last
+        chg = ((last-prev)/prev)*100 if prev else 0
+        return round(last,2), round(chg,2)
+    except:
+        return None, 0
+
+# === TRAE DATOS ===
+us02y, c1 = get_live("^IRX")
+us10y, c2 = get_live("^TNX")
+dxy, c3 = get_live("DX-Y.NYB")
+vix, c4 = get_live("^VIX")
+brent, c5 = get_live("BZ=F")
+oro, c6 = get_live("GC=F")
+btc, c7 = get_live("BTC-USD")
+
+# Si falla API, usa datos de respaldo de hoy
+if us02y is None:
+    us02y, us10y, dxy, vix, brent, oro, btc = 4.74, 4.78, 103.5, 18.2, 104.5, 4378, 67500
+    st.warning("Usando datos de respaldo - API Yahoo lenta, se actualizará solo")
+else:
+    # Convertir yields: ^IRX y ^TNX vienen x10
+    us02y = us02y/1 if us02y < 10 else us02y/10  # Ajuste según formato
+    us10y = us10y/1 if us10y < 10 else us10y/10
+    st.success(f"✅ Datos en vivo: Oro ${oro} - Brent ${brent}")
+
+# === MUESTRA MÓDULOS ===
+st.header("1. DINERO REAL - LIVE")
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("US02Y", f"{us02y}%", f"{c1}%")
+col2.metric("US10Y", f"{us10y}%", f"{c2}%")
+col3.metric("DXY", f"{dxy}", f"{c3}%")
+col4.metric("VIX", f"{vix}", f"{c4}%")
+
+st.header("2. MATERIAS + ORO")
+c1, c2, c3 = st.columns(3)
+c1.metric("ORO FUTURO", f"${oro}", f"{c6}%")
+c2.metric("BRENT", f"${brent}", f"{c5}%")
+c3.metric("BTC", f"${btc}", f"{c7}%")
+
+# === MODULO ALERTAS TELEGRAM ===
+st.divider()
+st.header("3. 🔔 ALERTAS TELEGRAM")
+
+st.write("Configura tu bot una sola vez:")
+token = st.text_input("BOT TOKEN (de @BotFather)", type="password")
+chat_id = st.text_input("CHAT ID (de @userinfobot)")
+
+def send_telegram(msg):
+    try:
         url = f"https://api.telegram.org/bot{token}/sendMessage"
-        requests.post(url, data={"chat_id": chat_id, "text": mensaje, "parse_mode": "HTML"}, timeout=10)
+        requests.post(url, data={"chat_id": chat_id, "text": msg}, timeout=5)
         return True
     except:
         return False
 
-# --- DATOS ---
-try:
-    import yfinance as yf
-    us02 = yf.Ticker("^IRX").history(period="5d") # proxy, usamos valores reales
-    us10 = yf.Ticker("^TNX").history(period="5d")
-    us02_v = float(us02["Close"].iloc[-1])
-    us10_v = float(us10["Close"].iloc[-1])
-    real = True
-except:
-    us02_v = 4.74
-    us10_v = 4.78
-    real = False
+# Lógica de alerta automática
+alerta = ""
+if isinstance(brent, (int,float)) and brent > 110:
+    alerta = f"🚨 BRENT ROMPIÓ $110 - Actual ${brent} - Oro puede ir a $4500 por miedo"
+if isinstance(us02y, (int,float)) and us02y > 4.80:
+    alerta = f"🚨 US02Y > 4.80% - Actual {us02y}% - PELIGRO ventas oro"
 
-# --- CABECERA COMO EN LA FOTO ---
-st.markdown("# 🟡 ORO TOTAL - Sistema Completo 6 Módulos")
-st.caption(f"Todo lo que mueve el oro en una sola hoja - 20 Sep 2026 | {'DATOS REALES' if real else 'MODO DEMO'}")
-st.divider()
+if alerta and token and chat_id:
+    if st.button("Enviar alerta ahora a Telegram"):
+        if send_telegram(alerta):
+            st.success("Alerta enviada!")
+        else:
+            st.error("Error token/chat_id")
+    # Auto-envío
+    if 'ultima_alerta' not in st.session_state or st.session_state.ultima_alerta != alerta:
+        send_telegram(alerta + f"\nOro ${oro}")
+        st.session_state.ultima_alerta = alerta
+        st.toast(alerta)
 
-# --- 1. DINERO REAL - 70% ---
-st.markdown("## 1. 💵 DINERO REAL - 70% del movimiento")
-c1, c2, c3 = st.columns(3)
-with c1:
-    st.metric("US02Y", f"{us02_v:.2f}%", "↑ ↑ Peligro ventas" if us02_v > 4.5 else "Baja - Bueno Oro")
-    st.caption("↑ ↑ Peligro ventas" if us02_v > 4.5 else "↓ Bueno para oro")
-with c2:
-    st.metric("US10Y", f"{us10_v:.2f}%", "-0.05%")
-with c3:
-    st.metric("US REAL 10Y", "2.10%", "Neutro")
+if alerta:
+    st.error(alerta)
+else:
+    st.info(f"Todo en rango - Oro ${oro} - Sin alertas críticas")
 
-# --- 2-5 OTROS MODULOS (resumen para completar los 6) ---
-st.divider()
-col1, col2, col3 = st.columns(3)
-col1.markdown("**2. 💲 DXY - Dólar**\n\n-0.45% → Débil = Bueno Oro ✅")
-col2.markdown("**3. 😱 MIEDO - VIX / SPX**\n\nVIX 18.5 → Riesgo medio")
-col3.markdown("**4. 🏦 BANCOS CENTRALES**\n\nFED Pausa - Dovish para oro ✅")
-
-col4, col5, col6 = st.columns(3)
-col4.markdown("**5. ⛏️ OFERTA / ETF**\n\nGLD +2.3M oz → Entrada dinero")
-col5.markdown("**6. 📊 SCORE TOTAL**\n\n🔥 4/6 Alcista Oro")
-col6.markdown(f"**XAU/USD**\n\n**${2685 + (us02_v-4.5)*10:.2f}**")
-
-st.divider()
-
-# --- MAPA DE CALOR COMO EN TU FOTO ---
-st.markdown("### MAPA DE CALOR - FUERZA DEL MERCADO")
-data = {
-    "": ["EUR","USD","JPY","GBP","CHF","AUD","CAD","NZD","XAU"],
-    "EUR": ["","-0.07%","-0.64%","0.23%","0.24%","0.08%","-0.02%","-0.24%","0.79%"],
-    "USD": ["0.07%","","-0.61%","0.3%","0.31%","0.13%","0.06%","-0.11%","0.85%"],
-    "JPY": ["0.68%","0.6%","","0.92%","1%","0.76%","0.58%","0.49%","1.43%"],
-}
-df = pd.DataFrame(data)
-st.dataframe(df, use_container_width=True, hide_index=True)
-
-# Para que se vea con colores como en la foto, usamos HTML
-st.markdown("""
-<style>
-div[data-testid="stDataFrame"] td:nth-child(2) { background-color: #a8d8cc; }
-</style>
-""", unsafe_allow_html=True)
-
-st.divider()
-if st.button("🚀 ENVIAR RESUMEN 6 MÓDULOS A TELEGRAM @Orototal57_bot", type="primary", use_container_width=True):
-    msg = f"🟡 <b>ORO TOTAL - 6 Módulos</b>\n\n1. DINERO REAL: US02Y {us02_v:.2f}% / US10Y {us10_v:.2f}%\n2. DXY: -0.45% Bueno\n3. XAU Fuerza vs USD: 0.85% 🔥\n4. Score: 4/6 Alcista\n⏰ {datetime.now().strftime('%H:%M')} Madrid\n@Orototal57_bot"
-    enviar_telegram(msg)
-    st.balloons()
-    st.success("Enviado a Telegram!")
-
-st.caption("Versión restaurada exacta - 20 Sep 2026 - KB Viñuela")
+st.caption("v57 - Próximo: Módulo 3,4,5,6 con datos live también")
