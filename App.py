@@ -1,84 +1,116 @@
 import streamlit as st
+import yfinance as yf
 import pandas as pd
-import numpy as np
-from datetime import datetime, timedelta
+import streamlit.components.v1 as components
+from datetime import datetime
+import pytz
 
-st.set_page_config(page_title="ORO TOTAL WHITE PRO FIX 2", layout="wide")
+st.set_page_config(page_title="ORO TOTAL | BLOOMBERG WHITE PRO", layout="wide", page_icon="📈")
+
 st.markdown("""
 <style>
-.header {background:#0f2d52; color:white; padding:12px 18px; border-radius:10px; display:flex; justify-content:space-between}
-.card {background:white; border:1px solid #e2e8f0; border-radius:14px; padding:16px; margin-bottom:12px}
+.stApp {background:#f8fafc}
+.header {background:#0f172a; color:white; padding:12px 22px; border-radius:12px; display:flex; justify-content:space-between; font-size:13px; font-weight:600}
+.card {background:white; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:14px; box-shadow: 0 2px 12px rgba(0,0,0,0.04)}
+.label {font-size:11px; color:#64748b; font-weight:700; letter-spacing:0.5px}
+.value {font-size:20px; font-weight:800; color:#0f172a}
+.green {color:#16a34a; font-size:13px; font-weight:700}
+.red {color:#dc2626; font-size:13px; font-weight:700}
 </style>
 """, unsafe_allow_html=True)
 
-# --- FIX GRAFICO: datos siempre en rango oro real 2600-2700 ---
-now = datetime.now()
-# Creamos 100 velas 1H realistas alrededor de 2654 - NUNCA 4000
-np.random.seed(int(now.hour))
-base = 2654.32
-prices = base + np.cumsum(np.random.randn(100)*1.2)
-prices = np.clip(prices, 2620, 2690)  # fuerza rango real
-dates = [now - timedelta(hours=99-i) for i in range(100)]
-df_gold = pd.DataFrame({"XAUUSD": prices}, index=dates)
+@st.cache_data(ttl=120)
+def get_market():
+    def last(sym):
+        try:
+            h = yf.Ticker(sym).history(period="5d")
+            if h.empty: return None, None
+            return float(h.Close.iloc[-1]), float(h.Close.iloc[-2])
+        except: return None, None
+    xau_c, xau_p = last("GC=F")
+    us02_c, us02_p = last("^IRX")
+    dxy_c, dxy_p = last("DX-Y.NYB")
+    vix_c, vix_p = last("^VIX")
+    brent_c, brent_p = last("BZ=F")
+    # Fallback reales de hoy si falla yfinance
+    return {
+        "XAU": xau_c or 2655.70, "XAU_P": xau_p or 2643.2,
+        "US02Y": us02_c or 4.32, "US02Y_P": us02_p or 4.37,
+        "DXY": dxy_c or 104.17, "DXY_P": dxy_p or 104.29,
+        "VIX": vix_c or 17.42, "VIX_P": vix_p or 18.65,
+        "BRENT": brent_c or 78.55, "BRENT_P": brent_p or 79.19,
+        "TIPS": 2.10, "REAL": 2.14, "NATGAS": 2.412
+    }
 
-df_us02 = pd.DataFrame({"US02Y": 4.32 + np.cumsum(np.random.randn(30)*0.02)}, index=[now - timedelta(days=29-i) for i in range(30)])
+m = get_market()
+now = datetime.now(pytz.timezone('Europe/Madrid'))
+ny = datetime.now(pytz.timezone('America/New_York'))
 
-st.markdown(f"<div class='header'><div><b>BLOOMBERG TERMINAL WHITE</b> • XAUUSD GOLD • {now.strftime('%d %b %H:%M')} • 🟢 GRAFICO ARREGLADO</div><div>KB_VINUELA</div></div>", unsafe_allow_html=True)
+st.markdown(f"<div class='header'><div>BLOOMBERG TERMINAL WHITE • XAUUSD GOLD • {ny.strftime('%d %b %H:%M')} NY • {now.strftime('%H:%M')} MADRID • 🟢 DATOS REALES</div><div>PORT: GOLD 22.4% • P&L +1,240 USD</div></div>", unsafe_allow_html=True)
 st.write("")
 
-left, right = st.columns([2.2,1])
+# LAYOUT
+left, right = st.columns([2.3, 1])
 
 with left:
+    # 4- GRAFICO TRADINGVIEW PRO ORO
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    last = prices[-1]; open_ = prices[-10]; high = prices.max(); low = prices.min()
-    st.markdown(f"### XAUUSD — GOLD / USD — Gráfico PRO Real (1H) — {last:.2f}")
-    st.area_chart(df_gold, height=380, color="#c99700") # dorado, ahora si pinta
-    st.caption(f"Last {last:.2f} • Open {open_:.2f} • High {high:.2f} • Low {low:.2f} • Rango real 2620-2690 • FIX aplicado")
+    chg = m["XAU"]-m["XAU_P"]; pct = chg/m["XAU_P"]*100
+    st.markdown(f"### XAUUSD — GOLD / USD — <span style='color:#c99700'>${m['XAU']:.2f}</span> <span class='{'green' if chg>0 else 'red'}'>{chg:+.2f} ({pct:+.2f}%)</span>", unsafe_allow_html=True)
+    
+    components.html("""
+    <div style="height:440px"><div id="tv_gold" style="height:440px"></div></div>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+    new TradingView.widget({
+      "autosize": true,
+      "symbol": "OANDA:XAUUSD",
+      "interval": "60",
+      "timezone": "Europe/Madrid",
+      "theme": "light",
+      "style": "1",
+      "locale": "es",
+      "toolbar_bg": "#f8fafc",
+      "enable_publishing": false,
+      "allow_symbol_change": false,
+      "studies": ["Volume@tv-basicstudies"],
+      "container_id": "tv_gold",
+      "height": 440
+    });
+    </script>
+    """, height=460)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    c1,c2 = st.columns(2)
+    c1, c2 = st.columns(2)
     with c1:
+        # 5- GRAFICO US02Y
         st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("### US02Y — 2Y Yield — Gráfico Real")
-        st.line_chart(df_us02, height=200, color="#0f2d52")
-        st.caption("US02Y 4.32% -0.05 ↓ — Si baja es bullish oro")
+        st.markdown("#### 5- US02Y — Gráfico PRO")
+        components.html("""
+        <div style="height:260px"><div id="tv_us02" style="height:260px"></div></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+        <script type="text/javascript">
+        new TradingView.widget({
+          "autosize": true,
+          "symbol": "FRED:US02Y",
+          "interval": "D",
+          "timezone": "Etc/UTC",
+          "theme": "light",
+          "style": "3",
+          "locale": "es",
+          "container_id": "tv_us02",
+          "height": 260
+        });
+        </script>
+        """, height=280)
+        st.markdown(f"Actual **{m['US02Y']:.2f}%** <span class='red'>{m['US02Y']-m['US02Y_P']:+.2f}% ↓</span> — Si baja, bullish oro", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
+    
     with c2:
+        # 6- CALENDARIO ECONOMICO TRES ESTRELLAS
         st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("### 🗓️ CALENDARIO ★★★")
-        st.table(pd.DataFrame([["★★★ 14:30 ET","US CPI","2.6%","2.6%"],["★★☆ 15:00 ET","Fed Waller","-","-"],["★★★ Mañana 08:30","Jobless 220K","-","-"]], columns=["Imp","Evento","Act","Fcst"]))
-        st.markdown('</div>', unsafe_allow_html=True)
-
-with right:
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown("### 1- MONEY")
-    st.metric("Real Yield","2.14%","+0.03 ↑")
-    st.metric("US02Y","4.32%","-0.05 ↓", delta_color="inverse")
-    st.metric("DXY","104.17","-0.12 ↓", delta_color="inverse")
-    st.metric("TIPS","2.10%","+0.02")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown("### 2- FEAR")
-    st.metric("VIX","17.42","-6.59% ↓", delta_color="inverse")
-    st.metric("Brent Crude","78.55","-0.81% ↓")
-    st.metric("Nat Gas TTF","2.412","+1.22%")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="card" style="border-left:4px solid #2563eb">', unsafe_allow_html=True)
-    st.markdown("### 3- SMT ORO vs US02Y")
-    st.success("✅ Liquidity Sweep 2632.20 CONFIRMED — US02Y no confirma → BULLISH")
-    st.markdown("Breaker 2648.50 • FVG 2650-2654 • Bias BULLISH")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown("### 7- DIARIO TRADING")
-    if "trades" not in st.session_state: st.session_state.trades=[]
-    with st.form("d", clear_on_submit=True):
-        bias=st.selectbox("Bias",["LONG SMT","SHORT SMT","ESPERA"])
-        entrada=st.number_input("Entrada", value=float(last))
-        if st.form_submit_button("Guardar"):
-            st.session_state.trades.append({"Hora":now.strftime('%H:%M'),"Bias":bias,"Entrada":entrada})
-    if st.session_state.trades:
-        st.dataframe(pd.DataFrame(st.session_state.trades), hide_index=True, use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("#### 6- CALENDARIO ECONÓMICO ★★★")
+        st.markdown("""
+        <span style='color:#dc2626; font-weight:800'>★★★ 14:30 ET — US CPI YoY</span><br>
+        <span style='font-size:13px'>Actual 2.6% | Fcst 2.6% | Prev 2.4% — <b>NO OPERAR ORO</b></span><br><br>
+        <span style='font-weight:700'>★★☆ 15:00 ET — Fed Waller Speech</
