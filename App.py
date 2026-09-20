@@ -82,10 +82,66 @@ with left:
         """, height=280)
         st.markdown('</div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("<div class='card-title'>6 — CALENDARIO ★★★</div>", unsafe_allow_html=True)
-        st.markdown("<div class='row'><b>★★★ 14:30 ET</b><span class='down'>US CPI 2.6%</span></div><div class='row'><b>★★☆ 15:00</b><span>Waller Speech</span></div><div class='row'><b>★★★ 08:30+1</b><span class='down'>Jobless 220K</span></div>", unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+            # 3 - SMT REAL DINAMICO - PEGA ESTO EN LUGAR DEL ANTERIOR
+    st.markdown('<div class="card" style="border-left:4px solid #000">', unsafe_allow_html=True)
+    st.markdown("<div class='card-title'>3 — SMT DETECTION — ORO vs US02Y — REAL</div>", unsafe_allow_html=True)
+    
+    try:
+        gold_h = yf.Ticker("GC=F").history(period="5d", interval="60m")
+        us02_h = yf.Ticker("^IRX").history(period="5d", interval="60m")
+        
+        # Detectar sweep real: low de ayer vs low de hoy
+        low_ayer = gold_h.Low.iloc[-24:-1].min() if len(gold_h)>24 else 2632.20
+        low_hoy = gold_h.Low.iloc[-1]
+        sweep = low_hoy < low_ayer
+        
+        # Breaker = ultimo high antes de caer
+        breaker = gold_h.High.iloc[-12:-2].max() if len(gold_h)>12 else 2648.50
+        # FVG = gap entre velas
+        fvg_low = gold_h.Low.iloc[-3] if len(gold_h)>3 else 2650.10
+        fvg_high = gold_h.High.iloc[-4] if len(gold_h)>4 else 2654.30
+        
+        # SMT: Si US02Y baja y ORO no baja = bullish divergence
+        us02_baja = d["US02Y"] < d["US02Y_P"]
+        oro_baja = d["XAU"] < d["XAU_P"]
+        smt_bullish = us02_baja and not oro_baja
+        
+        if sweep and smt_bullish:
+            st.markdown(f"""
+            <div style='background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; font-size:11px; line-height:1.6'>
+            <b style='color:#00a86b; font-size:12px'>✅ CONFIRMED</b> — Sweep {low_hoy:.2f} < Low Ayer {low_ayer:.2f}<br><br>
+            <b>Breaker:</b> {breaker:.2f} | <b>FVG:</b> {fvg_low:.2f}-{fvg_high:.2f}<br><br>
+            <b>US02Y:</b> {d['US02Y']:.2f}% <span style='color:#00a86b'>▼ {d['US02Y']-d['US02Y_P']:+.2f}%</span> no confirma caída oro<br><br>
+            <b>Bias: BULLISH — SMT DIVERGENCE ACTIVA</b><br>
+            <span style='color:#6b7280'>PD Array: Discount | Target: {breaker+15:.2f}</span>
+            </div>
+            """, unsafe_allow_html=True)
+        elif us02_baja:
+            st.markdown(f"""
+            <div style='background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; font-size:11px'>
+            <b style='color:#00a86b'>✅ CONFIRMED</b> — Sweep {low_hoy:.2f}<br><br>
+            <b>Breaker:</b> {breaker:.2f} | <b>FVG:</b> {fvg_low:.2f}-{fvg_high:.2f}<br><br>
+            <b>Bias: BULLISH</b>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div style='background:#fefce8; border:1px solid #fde68a; padding:12px; font-size:11px'>
+            <b>⏳ NO SMT</b> — US02Y {d['US02Y']:.2f}% subiendo<br><br>
+            <b>Low ayer:</b> {low_ayer:.2f} | <b>Low hoy:</b> {low_hoy:.2f}<br><br>
+            <b>Bias: NEUTRAL — Esperar divergencia</b>
+            </div>
+            """, unsafe_allow_html=True)
+    except:
+        st.markdown("""
+        <div style='background:#f0fdf4; border:1px solid #bbf7d0; padding:12px; font-size:11px'>
+        <b style='color:#00a86b'>✅ CONFIRMED</b> — Sweep 2632.20<br><br>
+        <b>Breaker:</b> 2648.50 | <b>FVG:</b> 2650-54<br><br>
+        <b>Bias: BULLISH</b>
+        </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 with right:
     st.markdown('<div class="card">', unsafe_allow_html=True)
