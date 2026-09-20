@@ -6,7 +6,16 @@ def get(t):
     try:
         d=yf.Ticker(t).history(period="5d")
         return float(d.Close[-1]), float(d.Close[-1]-d.Close[-2])
-    except:
+    def get(tickers):
+    if isinstance(tickers, str):
+        tickers = [tickers]
+    for tk in tickers:
+        try:
+            d=yf.Ticker(tk).history(period="5d")
+            if len(d)>=2:
+                return float(d.Close.iloc[-1]), float(d.Close.iloc[-1]-d.Close.iloc[-2])
+        except:
+            continue
         return 0,0
 
 vix,dvix=get("^VIX")
